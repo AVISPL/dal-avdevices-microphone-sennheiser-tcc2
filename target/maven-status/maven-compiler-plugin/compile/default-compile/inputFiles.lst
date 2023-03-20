@@ -1,0 +1,17 @@
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\comom\SennheiserConstant.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\dto\audio\reference\ReferenceDTO.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\dto\meter\beam\BeamDTO.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\dto\osc\OscDTO.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\dto\device\network\Ipv4AddressDTO.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\dto\device\network\EthernetDTO.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\dto\device\identity\IdentityDTO.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\dto\audio\AudioDTO.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\dto\device\DeviceDTO.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\SennheiserTCC2Communicator.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\dto\meter\reference\ReferenceDTO.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\dto\meter\MeterDTO.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\comom\SennheiserCommandList.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\comom\SennheiserPropertiesList.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\dto\meter\input\InputDTO.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\dto\device\network\NetworkDTO.java
+D:\Project\AVISPL\shehensier\dal-avdevices-microphone-sennheiser-tcc2\src\main\java\com\avispl\symphony\dal\avdevices\microphone\sennheiser\tcc2\dto\DeviceWrapper.java
