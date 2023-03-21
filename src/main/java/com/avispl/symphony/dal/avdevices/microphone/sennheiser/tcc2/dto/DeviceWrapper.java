@@ -155,6 +155,26 @@ public class DeviceWrapper {
 				return device.getNetwork().getEthernet().getMacAddresses().get(0);
 			case IPV4_INTERFACE_NAME:
 				return device.getNetwork().getEthernet().getInterfaceNames().get(0);
+			case IDENTIFY_DEVICE:
+				return String.valueOf(device.getIdentification().isVisual());
+			case LED_BRIGHTNESS:
+				return String.valueOf(device.getLed().getBrightness());
+			case DEVICE_RESTART:
+				return String.valueOf(device.isRestart());
+			case AUDIO_MUTE:
+				return String.valueOf(audio.isMute());
+			case VOICE_LIFT:
+				return String.valueOf(audio.getVoiceLift().isActive());
+			case MIC_MUTE_LED_COLOR:
+				return device.getLed().getMicMuteColor().getColor();
+			case MIC_ON_LED_COLOR:
+				return device.getLed().getMicOnColor().getColor();
+			case LED_CUSTOM_COLOR:
+				return device.getLed().getCustomColor().getColor();
+			case FAR_END_ACTIVITY_LED_MODE:
+				return String.valueOf(device.getLed().isActivity());
+			case INPUT_LEVEL_GAIN:
+				return String.valueOf(audio.getReference().getGain());
 		}
 		return null;
 	}

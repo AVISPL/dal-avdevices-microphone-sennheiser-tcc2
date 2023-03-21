@@ -37,6 +37,16 @@ public enum SennheiserPropertiesList {
 	IPV4_NETMASK(SennheiserConstant.IPV4_NETMASK, SennheiserCommandList.IPV4_NETMASK),
 	MAC_ADDRESS(SennheiserConstant.MAC_ADDRESS, SennheiserCommandList.MAC_ADDRESS),
 	IPV4_INTERFACE_NAME(SennheiserConstant.IPV4_INTERFACE_NAME, SennheiserCommandList.IPV4_INTERFACE_NAME),
+	IDENTIFY_DEVICE(SennheiserConstant.IDENTIFY_DEVICE, SennheiserCommandList.IDENTIFY_DEVICE_CONTROLLING),
+	LED_BRIGHTNESS(SennheiserConstant.LED_BRIGHTNESS, SennheiserCommandList.LED_BRIGHTNESS_CONTROLLING),
+	DEVICE_RESTART(SennheiserConstant.DEVICE_RESTART, SennheiserCommandList.DEVICE_RESTART_CONTROLLING),
+	AUDIO_MUTE(SennheiserConstant.AUDIO_MUTE, SennheiserCommandList.AUDIO_MUTE_CONTROLLING),
+	VOICE_LIFT(SennheiserConstant.VOICE_LIFT, SennheiserCommandList.VOICE_LIFT_CONTROLLING),
+	INPUT_LEVEL_GAIN(SennheiserConstant.INPUT_LEVEL_GAIN, SennheiserCommandList.INPUT_LEVEL_GAIN_CONTROLLING),
+	MIC_ON_LED_COLOR(SennheiserConstant.MIC_ON_LED_COLOR, SennheiserCommandList.MIC_ON_LED_COLOR_CONTROLLING),
+	MIC_MUTE_LED_COLOR(SennheiserConstant.MIC_MUTE_LED_COLOR, SennheiserCommandList.MIC_MUTE_LED_COLOR_CONTROLLING),
+	LED_CUSTOM_COLOR(SennheiserConstant.LED_CUSTOM_COLOR, SennheiserCommandList.LED_CUSTOM_COLOR_CONTROLLING),
+	FAR_END_ACTIVITY_LED_MODE(SennheiserConstant.FAR_END_ACTIVITY_LED_MODE, SennheiserCommandList.FAR_END_ACTIVITY_LED_MODE_CONTROLLING),
 	;
 	private final String name;
 	private final String command;

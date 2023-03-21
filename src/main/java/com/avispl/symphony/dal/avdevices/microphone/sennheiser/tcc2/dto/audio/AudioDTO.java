@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.reference.ReferenceDTO;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.voice.VoiceLiftDTO;
 
 /**
  * AudioDTO class provides during the monitoring and controlling process
@@ -21,6 +22,8 @@ public class AudioDTO {
 	@JsonProperty("room_in_use")
 	private boolean roomInUse;
 	private boolean mute;
+	@JsonProperty("voice_lift")
+	private VoiceLiftDTO voiceLift;
 	@JsonProperty("ref1")
 	private ReferenceDTO reference;
 
@@ -40,6 +43,24 @@ public class AudioDTO {
 	 */
 	public void setReference(ReferenceDTO reference) {
 		this.reference = reference;
+	}
+
+	/**
+	 * Retrieves {@code {@link #voiceLift}}
+	 *
+	 * @return value of {@link #voiceLift}
+	 */
+	public VoiceLiftDTO getVoiceLift() {
+		return voiceLift;
+	}
+
+	/**
+	 * Sets {@code voiceLift}
+	 *
+	 * @param voiceLift the {@code com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.voice.VoiceLiftDTO} field
+	 */
+	public void setVoiceLift(VoiceLiftDTO voiceLift) {
+		this.voiceLift = voiceLift;
 	}
 
 	/**

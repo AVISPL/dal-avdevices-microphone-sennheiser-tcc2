@@ -6,6 +6,7 @@ package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import com.avispl.symphony.api.dal.dto.control.AdvancedControllableProperty;
 import com.avispl.symphony.api.dal.dto.monitor.ExtendedStatistics;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserPropertiesList;
 
 /**
  * SennheiserTCC2CommunicatorTest
@@ -42,9 +44,31 @@ public class SennheiserTCC2CommunicatorTest {
 	@Test
 	void testSennheiserTCC2CommunicatorGetStatistic() throws Exception {
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
-		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 		Map<String, String> dynamicStatistic = extendedStatistic.getDynamicStatistics();
 		List<AdvancedControllableProperty> advancedControllablePropertyList = extendedStatistic.getControllableProperties();
 		Map<String, String> statistics = extendedStatistic.getStatistics();
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.VENDOR.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.PRODUCT_NAME.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.SERIAL_NUMBER.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.HARDWARE_REVISION.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.FIRMWARE_VERSION.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.OSC_VERSION.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.MAC_ADDRESS.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.IPV4_ADDRESS.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.IPV4_INTERFACE_NAME.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.IPV4_NETMASK.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.IPV4_DEFAULT_GATEWAY.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_DATE.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_TIME.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_INFORMATION.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_POSITION.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_NAME.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_LOCATION.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_LANGUAGE.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.ROOM_IN_USE.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.BEAM_AZIMUTH.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.BEAM_ELEVATION.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.INPUT_PEAK_LEVEL.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DANTE_AEC_REFERENCE_RMS_LEVEL.getName()));
 	}
 }

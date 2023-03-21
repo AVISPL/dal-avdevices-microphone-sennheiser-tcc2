@@ -34,5 +34,14 @@ public class SennheiserCommandList {
 	public static final String IPV4_DEFAULT_GATEWAY = "{\"device\":{\"network\":{\"ipv4\":{\"gateway\":null}}}}\"";
 	public static final String MAC_ADDRESS = "{\"device\":{\"network\":{\"ether\":{\"macs\":null}}}}\"";
 	public static final String IPV4_INTERFACE_NAME = "{\"device\":{\"network\":{\"ether\":{\"interfaces\":null}}}}\"";
-
+	public static final String IDENTIFY_DEVICE_CONTROLLING = "{\"device\":{\"identification\":{\"visual\":null}}}\"";
+	public static final String LED_BRIGHTNESS_CONTROLLING = "{\"device\":{\"led\":{\"brightness\":null}}}\"";
+	public static final String DEVICE_RESTART_CONTROLLING = "{\"device\":{\"restart\":null}}\"";
+	public static final String AUDIO_MUTE_CONTROLLING = "{\"audio\":{\"mute\":null}}\"";
+	public static final String VOICE_LIFT_CONTROLLING = "{\"audio\":{\"voice_lift\":{\"active\":null}}}\"";
+	public static final String INPUT_LEVEL_GAIN_CONTROLLING = "{\"audio\":{\"ref1\":{\"gain\":null}}}\"";
+	public static final String MIC_ON_LED_COLOR_CONTROLLING = "{\"device\":{\"led\":{\"mic_on\":{\"color\":null}}}}\"";
+	public static final String MIC_MUTE_LED_COLOR_CONTROLLING = "{\"device\":{\"led\":{\"mic_mute\":{\"color\":null}}}}\"";
+	public static final String LED_CUSTOM_COLOR_CONTROLLING = "{\"device\":{\"led\":{\"custom\":{\"color\":null}}}}\"";
+	public static final String FAR_END_ACTIVITY_LED_MODE_CONTROLLING = "{\"device\":{\"led\":{\"show_farend_activity\":null}}}\"";
 }

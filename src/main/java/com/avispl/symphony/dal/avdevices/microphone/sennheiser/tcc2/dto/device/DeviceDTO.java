@@ -5,7 +5,9 @@ package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.identification.IdentificationDTO;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.identity.IdentityDTO;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.led.LedDTO;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.network.NetworkDTO;
 
 /**
@@ -27,6 +29,8 @@ public class DeviceDTO {
 	private String name;
 	private String location;
 	private String language;
+	private IdentificationDTO identification;
+	private LedDTO led;
 	private boolean restart;
 
 
@@ -192,6 +196,41 @@ public class DeviceDTO {
 		this.network = network;
 	}
 
+	/**
+	 * Retrieves {@code {@link #identification}}
+	 *
+	 * @return value of {@link #identification}
+	 */
+	public IdentificationDTO getIdentification() {
+		return identification;
+	}
+
+	/**
+	 * Sets {@code identification}
+	 *
+	 * @param identification the {@code com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.identification.IdentificationDTO} field
+	 */
+	public void setIdentification(IdentificationDTO identification) {
+		this.identification = identification;
+	}
+
+	/**
+	 * Retrieves {@code {@link #led}}
+	 *
+	 * @return value of {@link #led}
+	 */
+	public LedDTO getLed() {
+		return led;
+	}
+
+	/**
+	 * Sets {@code led}
+	 *
+	 * @param led the {@code com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.led.LedDTO} field
+	 */
+	public void setLed(LedDTO led) {
+		this.led = led;
+	}
 
 	/**
 	 * Retrieves {@code {@link #restart}}
