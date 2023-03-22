@@ -9,6 +9,7 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -146,15 +147,15 @@ public class DeviceWrapper {
 			case DANTE_AEC_REFERENCE_RMS_LEVEL:
 				return String.valueOf(meter.getReference().getRms());
 			case IPV4_ADDRESS:
-				return device.getNetwork().getIpv4Address().getIpAddresses().get(0);
+				return convertListToString(device.getNetwork().getIpv4Address().getIpAddresses());
 			case IPV4_DEFAULT_GATEWAY:
-				return device.getNetwork().getIpv4Address().getGateWays().get(0);
+				return convertListToString(device.getNetwork().getIpv4Address().getGateWays());
 			case IPV4_NETMASK:
-				return device.getNetwork().getIpv4Address().getNetMasks().get(0);
+				return convertListToString(device.getNetwork().getIpv4Address().getNetMasks());
 			case MAC_ADDRESS:
-				return device.getNetwork().getEthernet().getMacAddresses().get(0);
+				return convertListToString(device.getNetwork().getEthernet().getMacAddresses());
 			case IPV4_INTERFACE_NAME:
-				return device.getNetwork().getEthernet().getInterfaceNames().get(0);
+				return convertListToString(device.getNetwork().getEthernet().getInterfaceNames());
 			case IDENTIFY_DEVICE:
 				return String.valueOf(device.getIdentification().isVisual());
 			case LED_BRIGHTNESS:
@@ -181,6 +182,9 @@ public class DeviceWrapper {
 
 	/**
 	 * convert number of seconds from 1/1/2000 to now
+	 *
+	 * @param numberOfSeconds number of seconds from 1/1/2000
+	 * @return Date Time Format - EEE MMM dd HH:mm:ss z yyyy
 	 */
 	private String convertNumberOfSecondsToTimeStamp(long numberOfSeconds) {
 		LocalDateTime startDate = LocalDateTime.of(2000, Month.JANUARY, 1, 0, 0, 0);
@@ -188,5 +192,23 @@ public class DeviceWrapper {
 		LocalDateTime resultDate = startDate.plus(duration);
 		ZonedDateTime zonedDateTime = resultDate.atZone(ZoneId.systemDefault());
 		return DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy", Locale.US).format(zonedDateTime);
+	}
+
+	/**
+	 * convert value list to String
+	 *
+	 * @param list value list
+	 * @return String after converting
+	 */
+	private String convertListToString(List<String> list) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < list.size(); i++) {
+			if (i == list.size() - 1) {
+				result.append(list.get(i));
+			} else {
+				result.append(list.get(i)).append(",");
+			}
+		}
+		return result.toString();
 	}
 }

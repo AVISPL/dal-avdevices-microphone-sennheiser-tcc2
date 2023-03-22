@@ -21,8 +21,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import org.springframework.util.CollectionUtils;
 
@@ -33,10 +33,10 @@ import com.avispl.symphony.api.dal.dto.control.AdvancedControllableProperty;
 import com.avispl.symphony.api.dal.dto.control.ControllableProperty;
 import com.avispl.symphony.api.dal.dto.monitor.ExtendedStatistics;
 import com.avispl.symphony.api.dal.dto.monitor.Statistics;
+import com.avispl.symphony.api.dal.error.ResourceNotReachableException;
 import com.avispl.symphony.api.dal.monitor.Monitorable;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserConstant;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserLEDColorEnum;
-import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserMetricGroup;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserPropertiesList;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.DeviceWrapper;
 import com.avispl.symphony.dal.communicator.SocketCommunicator;
@@ -54,7 +54,6 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	ObjectMapper objectMapper = new ObjectMapper();
 	private ExtendedStatistics localExtendedStatistics;
 	private final ReentrantLock reentrantLock = new ReentrantLock();
-	private final Condition condition = reentrantLock.newCondition();
 	private boolean isEmergencyDelivery;
 	private final Set<String> failedMonitor = new HashSet<>();
 	private ExecutorService fetchingDataExSer;
@@ -68,10 +67,15 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	 */
 	private long commandsCoolDownDelay = 200;
 	private long lastCommandTimestamp;
+	private int countMonitoringAndControllingCommand = 0;
 	/**
 	 * store configManagement adapter properties
 	 */
 	private String configManagement;
+	/**
+	 * configManagement in boolean value
+	 */
+	private boolean isConfigManagement;
 	/**
 	 * Local cache stores data after a period of time
 	 */
@@ -93,40 +97,6 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	 */
 	public void setConfigManagement(String configManagement) {
 		this.configManagement = configManagement;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void internalInit() throws Exception {
-		fetchingDataExSer = Executors.newFixedThreadPool(1);
-		timeoutManagementExSer = Executors.newFixedThreadPool(1);
-		super.internalInit();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void internalDestroy() {
-		if (localExtendedStatistics != null && localExtendedStatistics.getStatistics() != null && localExtendedStatistics.getControllableProperties() != null) {
-			localExtendedStatistics.getStatistics().clear();
-			localExtendedStatistics.getControllableProperties().clear();
-		}
-		if (!localCacheMapOfPropertyNameAndValue.isEmpty()) {
-			localCacheMapOfPropertyNameAndValue.clear();
-		}
-		//isConfigManagement = false;
-		failedMonitor.clear();
-		try {
-			fetchingDataExSer.shutdownNow();
-			timeoutManagementExSer.shutdownNow();
-		} catch (Exception e) {
-			logger.warn("Unable to end the TCP connection.", e);
-		} finally {
-			super.internalDestroy();
-		}
 	}
 
 	/**
@@ -219,7 +189,67 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 			if (localExtendedStatistics == null) {
 				return;
 			}
+			isEmergencyDelivery = true;
+			Map<String, String> stats = this.localExtendedStatistics.getStatistics();
+			List<AdvancedControllableProperty> advancedControllableProperties = this.localExtendedStatistics.getControllableProperties();
+			String value = String.valueOf(controllableProperty.getValue());
+			String property = controllableProperty.getProperty();
 
+			String propertyKey;
+			String[] propertyList = property.split(SennheiserConstant.HASH);
+			String group = property + SennheiserConstant.HASH;
+			if (property.contains(SennheiserConstant.HASH)) {
+				propertyKey = propertyList[1];
+				group = propertyList[0] + SennheiserConstant.HASH;
+			} else {
+				propertyKey = property;
+			}
+			SennheiserPropertiesList propertyItem = SennheiserPropertiesList.getByName(propertyKey);
+			switch (propertyItem) {
+				case DEVICE_RESTART:
+				case IDENTIFY_DEVICE:
+					sendRequestToControlValue(propertyItem, SennheiserConstant.TRUE);
+					break;
+				case FAR_END_ACTIVITY_LED_MODE:
+				case VOICE_LIFT:
+				case AUDIO_MUTE:
+					String switchStatus = SennheiserConstant.FALSE;
+					if (String.valueOf(SennheiserConstant.NUMBER_ONE).equals(value)) {
+						switchStatus = SennheiserConstant.TRUE;
+					}
+					sendRequestToControlValue(propertyItem, switchStatus);
+					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, switchStatus);
+					break;
+				case LED_BRIGHTNESS:
+					sendRequestToControlValue(propertyItem, value);
+					int brightnessValue = Integer.parseInt(value.split(SennheiserConstant.POINT)[0]);
+					if (brightnessValue == 0) {
+						value = SennheiserConstant.OFF;
+					} else {
+						value = String.valueOf(brightnessValue);
+					}
+					stats.put(group + SennheiserConstant.LED_BRIGHTNESS_CURRENT_VALUE, value);
+					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, value);
+					break;
+				case INPUT_LEVEL_GAIN:
+					sendRequestToControlValue(propertyItem, value);
+					value = value.split(SennheiserConstant.POINT)[0];
+					stats.put(group + SennheiserConstant.INPUT_LEVEL_GAIN_CURRENT_VALUE, value);
+					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, value);
+					break;
+				case LED_CUSTOM_COLOR:
+				case MIC_MUTE_LED_COLOR:
+				case MIC_ON_LED_COLOR:
+					value = value.toUpperCase();
+					StringBuilder upperValue = new StringBuilder();
+					upperValue.append(SennheiserConstant.QUOTES).append(value).append(SennheiserConstant.QUOTES);
+					sendRequestToControlValue(propertyItem, upperValue.toString());
+					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, value);
+					break;
+				default:
+					logger.debug(String.format("Property name %s doesn't support", propertyKey));
+			}
+			updateValueForTheControllableProperty(property, value, stats, advancedControllableProperties);
 		} finally {
 			reentrantLock.unlock();
 		}
@@ -247,20 +277,69 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 
 	@Override
 	public List<Statistics> getMultipleStatistics() throws Exception {
-		ExtendedStatistics extendedStatistics = new ExtendedStatistics();
-		Map<String, String> stats = new HashMap<>();
-		List<AdvancedControllableProperty> advancedControllableProperties = new ArrayList<>();
-		if (!isEmergencyDelivery) {
-			failedMonitor.clear();
-			retrieveMonitoringAndControllingData();
-			populateMonitoringAndControllingData(stats, advancedControllableProperties);
+		reentrantLock.lock();
+		try {
+			ExtendedStatistics extendedStatistics = new ExtendedStatistics();
+			Map<String, String> stats = new HashMap<>();
+			List<AdvancedControllableProperty> advancedControllableProperties = new ArrayList<>();
+			if (countMonitoringAndControllingCommand == 0) {
+				countMonitoringAndControllingCommand = getNumberMonitoringAndControllingCommand();
+			}
+			if (!isEmergencyDelivery) {
+				convertConfigManagement();
+				failedMonitor.clear();
+				retrieveMonitoringAndControllingData();
+				if (failedMonitor.size() == countMonitoringAndControllingCommand) {
+					throw new ResourceNotReachableException("Cannot get monitoring data");
+				}
+				destroyChannel();
+				populateMonitoringAndControllingData(stats, advancedControllableProperties);
 
-			extendedStatistics.setStatistics(stats);
-			extendedStatistics.setControllableProperties(advancedControllableProperties);
-			localExtendedStatistics = extendedStatistics;
+				extendedStatistics.setStatistics(stats);
+				if (isConfigManagement) {
+					extendedStatistics.setControllableProperties(advancedControllableProperties);
+				}
+				localExtendedStatistics = extendedStatistics;
+			}
+			isEmergencyDelivery = false;
+		} finally {
+			reentrantLock.unlock();
 		}
-		isEmergencyDelivery = false;
 		return Collections.singletonList(localExtendedStatistics);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void internalInit() throws Exception {
+		fetchingDataExSer = Executors.newFixedThreadPool(1);
+		timeoutManagementExSer = Executors.newFixedThreadPool(1);
+		super.internalInit();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void internalDestroy() {
+		countMonitoringAndControllingCommand = 0;
+		if (localExtendedStatistics != null && localExtendedStatistics.getStatistics() != null && localExtendedStatistics.getControllableProperties() != null) {
+			localExtendedStatistics.getStatistics().clear();
+			localExtendedStatistics.getControllableProperties().clear();
+		}
+		if (!localCacheMapOfPropertyNameAndValue.isEmpty()) {
+			localCacheMapOfPropertyNameAndValue.clear();
+		}
+		failedMonitor.clear();
+		try {
+			fetchingDataExSer.shutdownNow();
+			timeoutManagementExSer.shutdownNow();
+		} catch (Exception e) {
+			logger.warn("Unable to end the TCP connection.", e);
+		} finally {
+			super.internalDestroy();
+		}
 	}
 
 	/**
@@ -273,7 +352,9 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 		Future manageTimeOutWorkerThread;
 		for (int i = 0; i < commands.size(); i++) {
 			SennheiserPropertiesList commandIndex = commands.get(i);
-
+			if (!isConfigManagement && commandIndex.isControl()) {
+				continue;
+			}
 			devicesExecutionPool.add(fetchingDataExSer.submit(() -> {
 				retrieveDataByCommandName(commandIndex);
 			}));
@@ -283,10 +364,6 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 				while (!devicesExecutionPool.get(devicesExecutionPool.size() - SennheiserConstant.ORDINAL_TO_INDEX_CONVERT_FACTOR).isDone() && timeoutCount <= 10) {
 					try {
 						Thread.sleep(100);
-						// The thread waits until the controlProperty() method successfully controls.
-						if (isEmergencyDelivery) {
-							condition.wait();
-						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -328,6 +405,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 			return value;
 		} catch (Exception e) {
 			logger.error(String.format("Error when retrieving property name: %s", command.getName()), e);
+			failedMonitor.add(command.getName());
 			updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, command.getName(), SennheiserConstant.NONE);
 			return SennheiserConstant.NONE;
 		}
@@ -340,8 +418,8 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	 * @param advancedControllableProperties the advancedControllableProperties are list AdvancedControllableProperty instance
 	 */
 	private void populateMonitoringAndControllingData(Map<String, String> stats, List<AdvancedControllableProperty> advancedControllableProperties) {
-		String deviceSettingsGroup = SennheiserMetricGroup.DEVICE_SETTINGS.getName() + SennheiserConstant.HASH;
-		String audioSettingsGroup = SennheiserMetricGroup.AUDIO_SETTINGS.getName() + SennheiserConstant.HASH;
+		String deviceSettingsGroup = SennheiserConstant.DEVICE_SETTINGS + SennheiserConstant.HASH;
+		String audioSettingsGroup = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH;
 		String nameProperty;
 		String namePropertyCurrent;
 		String value;
@@ -503,10 +581,68 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	}
 
 	/**
+	 * Update the value for the control metric
+	 *
+	 * @param property is name of the metric
+	 * @param value the value is value of properties
+	 * @param extendedStatistics list statistics property
+	 * @param advancedControllableProperties the advancedControllableProperties is list AdvancedControllableProperties
+	 */
+	private void updateValueForTheControllableProperty(String property, String value, Map<String, String> extendedStatistics, List<AdvancedControllableProperty> advancedControllableProperties) {
+		if (!advancedControllableProperties.isEmpty()) {
+			for (AdvancedControllableProperty advancedControllableProperty : advancedControllableProperties) {
+				if (advancedControllableProperty.getName().equals(property)) {
+					extendedStatistics.put(property, value);
+					advancedControllableProperty.setValue(value);
+					break;
+				}
+			}
+		}
+	}
+
+	/**
 	 * convert value type boolean to number
 	 * If value is True then return 1 and False is 0
 	 */
 	private int convertBooleanToNumber(String value) {
 		return SennheiserConstant.TRUE.equals(value) ? 1 : 0;
 	}
+
+	/**
+	 * send request with param attach in command
+	 *
+	 * @param propertyItem command
+	 * @param value changed value
+	 */
+	private void sendRequestToControlValue(SennheiserPropertiesList propertyItem, String value) {
+		String command = propertyItem.getCommand().replace(SennheiserConstant.NULL, value);
+		try {
+			byte[] response = send(command.getBytes(StandardCharsets.UTF_8));
+			DeviceWrapper deviceWrapper = objectMapper.readValue(response, DeviceWrapper.class);
+			if (deviceWrapper.getOsc() != null && deviceWrapper.getOsc().getError() != null) {
+				throw new IllegalArgumentException(
+						String.format("Can't control property %s with value %s. The device has responded with an error: %s", propertyItem.name(), value, deviceWrapper.getOsc().getError()));
+			}
+		} catch (Exception e) {
+			throw new IllegalArgumentException(String.format("Can't control property %s with value %s. The device has responded with an error.", propertyItem.name(), value), e);
+		}
+	}
+
+	/**
+	 * This method is used to validate input config management from user
+	 */
+	private void convertConfigManagement() {
+		isConfigManagement = StringUtils.isNotNullOrEmpty(this.configManagement) && this.configManagement.equalsIgnoreCase(SennheiserConstant.IS_VALID_CONFIG_MANAGEMENT);
+	}
+
+	/**
+	 * get number commands base on monitor or control
+	 */
+	private int getNumberMonitoringAndControllingCommand() {
+		if (!isConfigManagement) {
+			return Arrays.stream(SennheiserPropertiesList.values()).filter(property -> SennheiserConstant.FALSE.equals(String.valueOf(property.isControl()))).collect(Collectors.toList()).size();
+		}
+		return SennheiserPropertiesList.values().length;
+	}
+
 }

@@ -8,12 +8,15 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.avispl.symphony.api.dal.dto.control.AdvancedControllableProperty;
+import com.avispl.symphony.api.dal.dto.control.ControllableProperty;
 import com.avispl.symphony.api.dal.dto.monitor.ExtendedStatistics;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserConstant;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserPropertiesList;
 
 /**
@@ -23,6 +26,7 @@ import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.Sennhe
  * Created on 3/15/2023
  * @since 1.0.0
  */
+@Tag("RealDevice")
 public class SennheiserTCC2CommunicatorTest {
 	private ExtendedStatistics extendedStatistic;
 	private SennheiserTCC2Communicator sennheiserTCC2Communicator;
@@ -40,13 +44,17 @@ public class SennheiserTCC2CommunicatorTest {
 		sennheiserTCC2Communicator.disconnect();
 	}
 
-	@Tag("RealDevice")
+	/**
+	 * Test value after get into device
+	 * @throws Exception
+	 */
 	@Test
 	void testSennheiserTCC2CommunicatorGetStatistic() throws Exception {
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 		Map<String, String> dynamicStatistic = extendedStatistic.getDynamicStatistics();
 		List<AdvancedControllableProperty> advancedControllablePropertyList = extendedStatistic.getControllableProperties();
 		Map<String, String> statistics = extendedStatistic.getStatistics();
+		Assert.assertEquals(23, statistics.size());
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.VENDOR.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.PRODUCT_NAME.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.SERIAL_NUMBER.getName()));
@@ -70,5 +78,203 @@ public class SennheiserTCC2CommunicatorTest {
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.BEAM_ELEVATION.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.INPUT_PEAK_LEVEL.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DANTE_AEC_REFERENCE_RMS_LEVEL.getName()));
+	}
+
+	/**
+	 * Test SennheiserTCC2Communicator.getMultipleStatistics control Unmute success
+	 * Expected control Unmute success
+	 */
+	@Test
+	void tesControlUnMute() throws Exception {
+		sennheiserTCC2Communicator.setConfigManagement("true");
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.AUDIO_MUTE;
+		Map<String, String> statistics = extendedStatistic.getStatistics();
+
+		String value = "0";
+		ControllableProperty controllableProperty = new ControllableProperty();
+		controllableProperty.setProperty(property);
+		controllableProperty.setValue(value);
+		sennheiserTCC2Communicator.controlProperty(controllableProperty);
+
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		statistics = extendedStatistic.getStatistics();
+		Assertions.assertEquals(value, statistics.get(property));
+	}
+
+	/**
+	 * Test SennheiserTCC2Communicator.getMultipleStatistics control VoiceLift success
+	 * Expected control VoiceLift success
+	 */
+	@Test
+	void tesControlVoiceLift() throws Exception {
+		sennheiserTCC2Communicator.setConfigManagement("true");
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		Map<String, String> statistics = extendedStatistic.getStatistics();
+
+		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.VOICE_LIFT;
+		String value = "0";
+		ControllableProperty controllableProperty = new ControllableProperty();
+		controllableProperty.setProperty(property);
+		controllableProperty.setValue(value);
+		sennheiserTCC2Communicator.controlProperty(controllableProperty);
+
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		statistics = extendedStatistic.getStatistics();
+		Assertions.assertEquals(value, statistics.get(property));
+	}
+
+	/**
+	 * Test SennheiserTCC2Communicator.getMultipleStatistics control FarEndActiveLedMode success
+	 * Expected control FarEndActiveLedMode success
+	 */
+	@Test
+	void tesControlFarEndActiveLedMode() throws Exception {
+		sennheiserTCC2Communicator.setConfigManagement("true");
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		Map<String, String> statistics = extendedStatistic.getStatistics();
+
+		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.FAR_END_ACTIVITY_LED_MODE;
+		String value = "0";
+		ControllableProperty controllableProperty = new ControllableProperty();
+		controllableProperty.setProperty(property);
+		controllableProperty.setValue(value);
+		sennheiserTCC2Communicator.controlProperty(controllableProperty);
+
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		statistics = extendedStatistic.getStatistics();
+		Assertions.assertEquals(value, statistics.get(property));
+	}
+
+	/**
+	 * Test SennheiserTCC2Communicator.getMultipleStatistics control IdentifyDevice success
+	 * Expected control IdentifyDevice success
+	 */
+	@Test
+	void tesControlIdentifyDevice() throws Exception {
+		sennheiserTCC2Communicator.setConfigManagement("true");
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		Map<String, String> statistics = extendedStatistic.getStatistics();
+
+		ControllableProperty controllableProperty = new ControllableProperty();
+		String property = SennheiserConstant.DEVICE_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.IDENTIFY_DEVICE;
+		String value = "1";
+		controllableProperty.setProperty(property);
+		controllableProperty.setValue(value);
+		sennheiserTCC2Communicator.controlProperty(controllableProperty);
+
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		statistics = extendedStatistic.getStatistics();
+		Assertions.assertEquals(value, statistics.get(property));
+	}
+
+	/**
+	 * Test SennheiserTCC2Communicator.getMultipleStatistics control InputLevelGain success
+	 * Expected control InputLevelGain success with min value
+	 */
+	@Test
+	void tesControlInputLevelGainWithMinValue() throws Exception {
+		sennheiserTCC2Communicator.setConfigManagement("true");
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		Map<String, String> statistics = extendedStatistic.getStatistics();
+
+		ControllableProperty controllableProperty = new ControllableProperty();
+		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.INPUT_LEVEL_GAIN;
+		String value = "-60.0";
+		controllableProperty.setProperty(property);
+		controllableProperty.setValue(value);
+		sennheiserTCC2Communicator.controlProperty(controllableProperty);
+
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		statistics = extendedStatistic.getStatistics();
+		Assertions.assertEquals("-60", statistics.get(property));
+	}
+
+	/**
+	 * Test SennheiserTCC2Communicator.getMultipleStatistics control InputLevelGain success
+	 * Expected control InputLevelGain success with max value
+	 */
+	@Test
+	void tesControlInputLevelGainWithMaxValue() throws Exception {
+		sennheiserTCC2Communicator.setConfigManagement("true");
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		Map<String, String> statistics = extendedStatistic.getStatistics();
+
+		ControllableProperty controllableProperty = new ControllableProperty();
+		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.INPUT_LEVEL_GAIN;
+		String value = "10.0";
+		controllableProperty.setProperty(property);
+		controllableProperty.setValue(value);
+		sennheiserTCC2Communicator.controlProperty(controllableProperty);
+
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		statistics = extendedStatistic.getStatistics();
+		Assertions.assertEquals("10", statistics.get(property));
+	}
+
+	/**
+	 * Test SennheiserTCC2Communicator.getMultipleStatistics control LEDBrightness success
+	 * Expected control LEDBrightness success
+	 */
+	@Test
+	void tesControlLEDBrightness() throws Exception {
+		sennheiserTCC2Communicator.setConfigManagement("true");
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		Map<String, String> statistics = extendedStatistic.getStatistics();
+
+		ControllableProperty controllableProperty = new ControllableProperty();
+		String property = SennheiserConstant.DEVICE_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.LED_BRIGHTNESS;
+		String value = "0";
+		controllableProperty.setProperty(property);
+		controllableProperty.setValue(value);
+		sennheiserTCC2Communicator.controlProperty(controllableProperty);
+
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		statistics = extendedStatistic.getStatistics();
+		Assertions.assertEquals("Off", statistics.get(property));
+	}
+
+	/**
+	 * Test SennheiserTCC2Communicator.getMultipleStatistics control MicOnLedColor success
+	 * Expected control MicOnLedColor success
+	 */
+	@Test
+	void tesControlMicOnLedColor() throws Exception {
+		sennheiserTCC2Communicator.setConfigManagement("true");
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		Map<String, String> statistics = extendedStatistic.getStatistics();
+
+		ControllableProperty controllableProperty = new ControllableProperty();
+		String property = SennheiserConstant.DEVICE_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.MIC_ON_LED_COLOR;
+
+		String value = "Green";
+		controllableProperty.setProperty(property);
+		controllableProperty.setValue(value);
+		sennheiserTCC2Communicator.controlProperty(controllableProperty);
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		statistics = extendedStatistic.getStatistics();
+		Assertions.assertEquals(value.toUpperCase(), statistics.get(property));
+	}
+
+	/**
+	 * Test SennheiserTCC2Communicator.getMultipleStatistics control CustomLedColor success
+	 * Expected control MicCustomLedColor success
+	 */
+	@Test
+	void testControlDeviceRestart() throws Exception {
+		sennheiserTCC2Communicator.setConfigManagement("true");
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		Map<String, String> statistics = extendedStatistic.getStatistics();
+
+		ControllableProperty controllableProperty = new ControllableProperty();
+		String property = SennheiserConstant.DEVICE_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.DEVICE_RESTART;
+		String value = "1";
+		controllableProperty.setProperty(property);
+		controllableProperty.setValue(value);
+		sennheiserTCC2Communicator.controlProperty(controllableProperty);
+
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		statistics = extendedStatistic.getStatistics();
+		Assertions.assertEquals(value.toUpperCase(), statistics.get(property));
 	}
 }

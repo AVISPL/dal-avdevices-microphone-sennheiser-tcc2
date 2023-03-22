@@ -48,6 +48,8 @@ public class SennheiserConstant {
 	public static final String DEVICE_SETTINGS_LED_BRIGHTNESS_CURRENT_VALUE ="DeviceSettings#LEDBrightnessCurrentValue";
 	public static final String INPUT_LEVEL_GAIN_CURRENT_VALUE ="InputLevelGainCurrentValue";
 	public static final String LED_BRIGHTNESS_CURRENT_VALUE ="LEDBrightnessCurrentValue";
+	public static final String DEVICE_SETTINGS ="DeviceSettings";
+	public static final String AUDIO_SETTINGS ="AudioSettings";
 	public static final String EMPTY = "";
 	public static final String HASH = "#";
 	public static final String QUOTES ="\"";
@@ -80,9 +82,9 @@ public class SennheiserConstant {
 	public static final String MIN_LEB_BRIGHTNESS_LABEL = "0";
 	public static final String MAX_LEB_BRIGHTNESS_LABEL = "5";
 	public static final Float MIN_INPUT_LEVEL_GAIN_VALUE = -60f;
-	public static final Float MAX_INPUT_LEVEL_GAIN_VALUE = 9f;
+	public static final Float MAX_INPUT_LEVEL_GAIN_VALUE = 10f;
 	public static final String MIN_INPUT_LEVEL_GAIN_LABEL = "-60";
-	public static final String MAX_INPUT_LEVEL_GAIN_LABEL = "9";
+	public static final String MAX_INPUT_LEVEL_GAIN_LABEL = "10";
 	public static final int GRACE_PERIOD = 0;
 	public static int NUMBER_ONE = 1;
 	public static int ORDINAL_TO_INDEX_CONVERT_FACTOR = 1;
