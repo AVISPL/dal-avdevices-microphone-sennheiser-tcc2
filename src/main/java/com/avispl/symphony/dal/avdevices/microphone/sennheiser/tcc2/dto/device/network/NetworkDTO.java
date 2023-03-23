@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- *	NetworkDTO class provides during the monitoring and controlling process
  *  NetworkDTO class includes Ipv4Address object and Ethernet object
  *
  * @author Kevin / Symphony Dev Team<br>
@@ -18,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class NetworkDTO {
 	@JsonProperty("ipv4")
 	private Ipv4AddressDTO ipv4Address;
+
 	@JsonProperty("ether")
 	private EthernetDTO ethernet;
 

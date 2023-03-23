@@ -4,7 +4,7 @@
 package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom;
 
 /**
- * SennheiserCommandList class provides during the monitoring and controlling process
+ * SennheiserCommandList class provides the commands list during the monitoring and controlling process
  *
  * @author Kevin / Symphony Dev Team<br>
  * Created on 3/14/2023

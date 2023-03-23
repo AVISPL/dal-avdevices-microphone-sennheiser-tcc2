@@ -6,7 +6,6 @@ package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.meter.b
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * BeamDTO class provides during the monitoring and controlling process
  * BeamDTO class includes information such as elevation value and azimuth value
  *
  * @author Kevin / Symphony Dev Team<br>

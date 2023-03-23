@@ -21,7 +21,6 @@ import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.meter.Me
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.osc.OscDTO;
 
 /**
- * Device Wrapper class provides during the monitoring and controlling process
  * Device Wrapper class includes device , osc , audio , meter information
  *
  * @author Kevin / Symphony Dev Team<br>
@@ -29,10 +28,10 @@ import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.osc.OscD
  * @since 1.0.0
  */
 public class DeviceWrapper {
-
 	private DeviceDTO device;
 	private OscDTO osc;
 	private AudioDTO audio;
+
 	@JsonProperty("m")
 	private MeterDTO meter;
 
@@ -108,6 +107,12 @@ public class DeviceWrapper {
 		this.meter = meter;
 	}
 
+	/**
+	 * get Object value by command Enum
+	 *
+	 * @param commandEnum command Enum value
+	 * @return value of object
+	 */
 	public String getObjectByName(SennheiserPropertiesList commandEnum) {
 		switch (commandEnum) {
 			case SERIAL_NUMBER:

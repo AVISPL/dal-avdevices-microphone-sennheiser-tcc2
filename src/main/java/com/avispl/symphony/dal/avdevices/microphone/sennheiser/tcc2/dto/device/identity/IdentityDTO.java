@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * IdentityDTO class provides during the monitoring and controlling process
  * IdentityDTO class includes the serial number, the product name and vendor
  *
  * @author Kevin / Symphony Dev Team<br>
@@ -16,15 +15,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IdentityDTO {
-
 	private String serial;
 	private String product;
 	private String vendor;
+
 	/**
 	 * hardware revision
 	 */
 	@JsonProperty("hw_revision")
 	private String hardware;
+
 	/**
 	 * firmware version
 	 */

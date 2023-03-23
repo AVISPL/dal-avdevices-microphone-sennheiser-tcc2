@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * LedDTO class provides during the monitoring and controlling process
  * LedDTO class includes the brightness, active value,mic on color, mic mute color and custom color object
  *
  * @author Kevin / Symphony Dev Team<br>
@@ -18,10 +17,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LedDTO {
 	private int brightness;
+
 	@JsonProperty("mic_on")
 	private MicOnColorDTO micOnColor;
+
 	@JsonProperty("mic_mute")
 	private MicMuteColorDTO micMuteColor;
+
 	@JsonProperty("custom")
 	private CustomColorDTO customColor;
 

@@ -6,7 +6,6 @@ package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.meter.r
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * ReferenceDTO class provides during the monitoring and controlling process
  * ReferenceDTO class includes rms value
  *
  * @author Kevin / Symphony Dev Team<br>

@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- *  EthernetDTO class provides during the monitoring and controlling process
  *  EthernetDTO class includes the mac addresses list and interface names list
  *
  * @author Kevin / Symphony Dev Team<br>

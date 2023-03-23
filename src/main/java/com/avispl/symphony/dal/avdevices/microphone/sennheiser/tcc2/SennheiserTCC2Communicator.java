@@ -43,10 +43,54 @@ import com.avispl.symphony.dal.communicator.SocketCommunicator;
 import com.avispl.symphony.dal.util.StringUtils;
 
 /**
- * An implementation of SennheiserTCC2Communicator to provide communication and interaction with SennheiserTCC2 device
+ * Sennheiser TCC2 Microphone Communicator Adapter
+ *
+ * Supported features are:
+ * Monitoring for System and Network information
+ *
+ * Monitoring Aggregated Device:
+ * <ul>
+ * <li> - Manufacturer(Vendor)</li>
+ * <li> - ProductName Version</li>
+ * <li> - SerialNumber</li>
+ * <li> - HardwareRevision</li>
+ * <li> - FirmwareVersion</li>
+ * <li> - OSCVersion</li>
+ * <li> - MACAddresses</li>
+ * <li> - IPv4InterfaceNames</li>
+ * <li> - IPv4Address</li>
+ * <li> - IPv4Netmask</li>
+ * <li> - IPv4DefaultGateway</li>
+ * <li> - DeviceTime</li>
+ * <li> - DeviceDate</li>
+ * <li> - DeviceInformation</li>
+ * <li> - DevicePosition</li>
+ * <li> - DeviceName</li>
+ * <li> - DeviceLocation</li>
+ * <li> - DeviceLanguage</li>
+ * <li> - AudioRoomInUse</li>
+ * <li> - BeamElevation</li>
+ * <li> - BeamAzimuth</li>
+ * <li> - InputPeakLevel</li>
+ * <li> - DanteAECReferenceRMSLevel</li>
+ * </ul>
+ *
+ * Controlling Aggregated Device:
+ * <ul>
+ * <li> - DeviceRestart</li>
+ * <li> - IdentifyDevice </li>
+ * <li> - LEDBrightness</li>
+ * <li> - LEDMicOnColor</li>
+ * <li> - LEDMicMuteLColor</li>
+ * <li> - LEDCustomColor</li>
+ * <li> - AudioMute</li>
+ * <li> - VoiceLift</li>
+ * <li> - InputLevelGain</li>
+ * <li> - FarEndActivityLEDMode</li>
+ * </ul>
  *
  * @author Kevin / Symphony Dev Team<br>
- * Created on 3/13/2022
+ * Created on 3/13/2023
  * @since 1.0.0
  */
 public class SennheiserTCC2Communicator extends SocketCommunicator implements Monitorable, Controller {
@@ -58,24 +102,29 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	private final Set<String> failedMonitor = new HashSet<>();
 	private ExecutorService fetchingDataExSer;
 	private ExecutorService timeoutManagementExSer;
+
 	/**
 	 * Pool for keeping all the async operations in, to track any operations in progress and cancel them if needed
 	 */
 	private final List<Future> devicesExecutionPool = new CopyOnWriteArrayList<>();
+
 	/**
 	 * Apply default delay in between of all the commands performed by the adapter.
 	 */
 	private long commandsCoolDownDelay = 200;
 	private long lastCommandTimestamp;
 	private int countMonitoringAndControllingCommand = 0;
+
 	/**
 	 * store configManagement adapter properties
 	 */
 	private String configManagement;
+
 	/**
 	 * configManagement in boolean value
 	 */
 	private boolean isConfigManagement;
+
 	/**
 	 * Local cache stores data after a period of time
 	 */
@@ -182,6 +231,12 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 		this.setCommandErrorList(Collections.singletonList("\r\n"));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * This method is recalled by Symphony to control specific property
+	 *
+	 * @param controllableProperty This is the property to be controlled
+	 */
 	@Override
 	public void controlProperty(ControllableProperty controllableProperty) throws Exception {
 		reentrantLock.lock();
@@ -222,18 +277,17 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 					break;
 				case LED_BRIGHTNESS:
 					sendRequestToControlValue(propertyItem, value);
-					int brightnessValue = Integer.parseInt(value.split(SennheiserConstant.POINT)[0]);
+					int brightnessValue = (int) Float.parseFloat(value);
+					value = String.valueOf(brightnessValue);
 					if (brightnessValue == 0) {
 						value = SennheiserConstant.OFF;
-					} else {
-						value = String.valueOf(brightnessValue);
 					}
 					stats.put(group + SennheiserConstant.LED_BRIGHTNESS_CURRENT_VALUE, value);
 					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, value);
 					break;
 				case INPUT_LEVEL_GAIN:
 					sendRequestToControlValue(propertyItem, value);
-					value = value.split(SennheiserConstant.POINT)[0];
+					value = String.valueOf((int) Float.parseFloat(value));
 					stats.put(group + SennheiserConstant.INPUT_LEVEL_GAIN_CURRENT_VALUE, value);
 					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, value);
 					break;
@@ -275,6 +329,12 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * This method is recalled by Symphony to get the list of statistics to be displayed
+	 *
+	 * @return List<Statistics> This return the list of statistics.
+	 */
 	@Override
 	public List<Statistics> getMultipleStatistics() throws Exception {
 		reentrantLock.lock();
@@ -290,7 +350,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 				failedMonitor.clear();
 				retrieveMonitoringAndControllingData();
 				if (failedMonitor.size() == countMonitoringAndControllingCommand) {
-					throw new ResourceNotReachableException("Cannot get monitoring data");
+					throw new ResourceNotReachableException(String.format("There was an error while retrieving monitoring data for all %s properties.", countMonitoringAndControllingCommand));
 				}
 				destroyChannel();
 				populateMonitoringAndControllingData(stats, advancedControllableProperties);
@@ -331,6 +391,8 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 		if (!localCacheMapOfPropertyNameAndValue.isEmpty()) {
 			localCacheMapOfPropertyNameAndValue.clear();
 		}
+		isEmergencyDelivery = false;
+		isConfigManagement = false;
 		failedMonitor.clear();
 		try {
 			fetchingDataExSer.shutdownNow();
@@ -361,7 +423,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 
 			manageTimeOutWorkerThread = timeoutManagementExSer.submit(() -> {
 				int timeoutCount = 1;
-				while (!devicesExecutionPool.get(devicesExecutionPool.size() - SennheiserConstant.ORDINAL_TO_INDEX_CONVERT_FACTOR).isDone() && timeoutCount <= 10) {
+				while (!devicesExecutionPool.get(devicesExecutionPool.size() - SennheiserConstant.ORDINAL_TO_INDEX_CONVERT_FACTOR).isDone() && timeoutCount <= SennheiserConstant.TIME_OUT_COUNT) {
 					try {
 						Thread.sleep(100);
 					} catch (InterruptedException e) {
@@ -388,6 +450,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 				throw new RuntimeException(e);
 			}
 		}
+		devicesExecutionPool.removeIf(Future::isDone);
 	}
 
 	/**
@@ -438,7 +501,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 						addAdvanceControlProperties(advancedControllableProperties, stats,
 								createSlider(stats, nameProperty, SennheiserConstant.MIN_LEB_BRIGHTNESS_LABEL, SennheiserConstant.MAX_LEB_BRIGHTNESS_LABEL, SennheiserConstant.MIN_LEB_BRIGHTNESS_VALUE,
 										SennheiserConstant.MAX_LEB_BRIGHTNESS_VALUE, Float.parseFloat(value)));
-						if (Integer.parseInt(value.split(SennheiserConstant.POINT)[0]) == 0) {
+						if ((int) Float.parseFloat(value) == 0) {
 							value = SennheiserConstant.OFF;
 						}
 						stats.put(SennheiserConstant.DEVICE_SETTINGS_LED_BRIGHTNESS_CURRENT_VALUE, value);
@@ -465,7 +528,8 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 					case VOICE_LIFT:
 					case FAR_END_ACTIVITY_LED_MODE:
 						nameProperty = audioSettingsGroup + namePropertyCurrent;
-						addAdvanceControlProperties(advancedControllableProperties, stats, createSwitch(nameProperty, convertBooleanToNumber(value), SennheiserConstant.OFF, SennheiserConstant.ON));
+						addAdvanceControlProperties(advancedControllableProperties, stats,
+								createSwitch(nameProperty, SennheiserConstant.TRUE.equals(value) ? 1 : 0, SennheiserConstant.OFF, SennheiserConstant.ON));
 						break;
 					default:
 						stats.put(namePropertyCurrent, localCacheMapOfPropertyNameAndValue.get(namePropertyCurrent));
@@ -601,14 +665,6 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	}
 
 	/**
-	 * convert value type boolean to number
-	 * If value is True then return 1 and False is 0
-	 */
-	private int convertBooleanToNumber(String value) {
-		return SennheiserConstant.TRUE.equals(value) ? 1 : 0;
-	}
-
-	/**
 	 * send request with param attach in command
 	 *
 	 * @param propertyItem command
@@ -621,10 +677,10 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 			DeviceWrapper deviceWrapper = objectMapper.readValue(response, DeviceWrapper.class);
 			if (deviceWrapper.getOsc() != null && deviceWrapper.getOsc().getError() != null) {
 				throw new IllegalArgumentException(
-						String.format("Can't control property %s with value %s. The device has responded with an error: %s", propertyItem.name(), value, deviceWrapper.getOsc().getError()));
+						String.format("The device has responded with an error: %s", deviceWrapper.getOsc().getError()));
 			}
 		} catch (Exception e) {
-			throw new IllegalArgumentException(String.format("Can't control property %s with value %s. The device has responded with an error.", propertyItem.name(), value), e);
+			throw new IllegalArgumentException(String.format("Can't control property %s with value %s.", propertyItem.name(), value), e);
 		}
 	}
 
@@ -644,5 +700,4 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 		}
 		return SennheiserPropertiesList.values().length;
 	}
-
 }

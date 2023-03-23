@@ -10,7 +10,6 @@ import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.re
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.voice.VoiceLiftDTO;
 
 /**
- * AudioDTO class provides during the monitoring and controlling process
  * AudioDTO class includes mute, room in use value and voice lift , reference object
  *
  * @author Kevin / Symphony Dev Team<br>
@@ -22,8 +21,10 @@ public class AudioDTO {
 	@JsonProperty("room_in_use")
 	private boolean roomInUse;
 	private boolean mute;
+
 	@JsonProperty("voice_lift")
 	private VoiceLiftDTO voiceLift;
+
 	@JsonProperty("ref1")
 	private ReferenceDTO reference;
 

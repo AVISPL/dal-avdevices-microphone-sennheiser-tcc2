@@ -4,7 +4,7 @@
 package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom;
 
 /**
- * SennheiserConstant class provides during the monitoring and controlling process
+ * SennheiserConstant class provides constant values during the monitoring and controlling process
  *
  * @author Kevin / Symphony Dev Team<br>
  * Created on 3/14/2023
@@ -63,18 +63,7 @@ public class SennheiserConstant {
 	public static final String OFF_STATUS = "OFF";
 	public static final String TRUE = "true";
 	public static final String FALSE = "false";
-	public static final String MUTE = "Mute";
-	public static final String UN_MUTE = "UnMute";
-	public static final int NUMBER_ZERO = 0;
 	public static final String ERROR = "ERROR";
-	public static final int ZERO = 0;
-	public static final int DEFAULT_CACHING_LIFETIME = 5;
-	public static final int MIN_DELAY_TIME = 100;
-	public static final int MAX_DELAY_TIME = 500;
-	public static final int DEFAULT_DELAY_TIME = 200;
-	public static int DEFAULT_CONFIG_TIMEOUT = 1000;
-	public static int MAX_CONFIG_TIMEOUT = 3000;
-	public static int DEFAULT_POLLING_INTERVAL = 1;
 	public static String NULL = "null";
 	public static String NONE = "None";
 	public static final Float MIN_LEB_BRIGHTNESS_VALUE = 0f;
@@ -87,8 +76,8 @@ public class SennheiserConstant {
 	public static final String MAX_INPUT_LEVEL_GAIN_LABEL = "10";
 	public static final int GRACE_PERIOD = 0;
 	public static int NUMBER_ONE = 1;
+	public static int TIME_OUT_COUNT = 10;
 	public static int ORDINAL_TO_INDEX_CONVERT_FACTOR = 1;
 	public static String IS_VALID_CONFIG_MANAGEMENT = "true";
-	public static final String[] COLOR_VALUE = {"Light green","Green","Blue","Red","Yellow","Orange","Cyan"};
 
 }

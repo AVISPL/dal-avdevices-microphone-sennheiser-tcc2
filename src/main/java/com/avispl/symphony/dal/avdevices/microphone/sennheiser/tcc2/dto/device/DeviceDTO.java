@@ -11,7 +11,6 @@ import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.l
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.network.NetworkDTO;
 
 /**
- * Device class provides during the monitoring and controlling process
  * Device class includes Identity Object, network object and some device information such as : time, date, system, position, name, location and language.
  *
  * @author Kevin / Symphony Dev Team<br>
@@ -32,7 +31,6 @@ public class DeviceDTO {
 	private IdentificationDTO identification;
 	private LedDTO led;
 	private boolean restart;
-
 
 	/**
 	 * Retrieves {@link #identity}

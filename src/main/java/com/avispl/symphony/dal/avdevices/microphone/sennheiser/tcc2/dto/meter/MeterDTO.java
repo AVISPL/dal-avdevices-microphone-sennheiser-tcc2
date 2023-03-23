@@ -11,7 +11,6 @@ import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.meter.in
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.meter.reference.ReferenceDTO;
 
 /**
- * MeterDTO class provides during the monitoring and controlling process
  * MeterDTO class includes beam object, input object and reference object
  *
  * @author Kevin / Symphony Dev Team<br>
@@ -21,8 +20,10 @@ import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.meter.re
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MeterDTO {
 	private BeamDTO beam;
+
 	@JsonProperty("in1")
 	private InputDTO input;
+
 	@JsonProperty("ref1")
 	private ReferenceDTO reference;
 

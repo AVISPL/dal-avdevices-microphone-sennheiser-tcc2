@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- *  Ipv4AddressDTO class provides during the monitoring and controlling process
  *  Ipv4AddressDTO class includes the ipv4 addresses list , netmask list and gateways list
  *
  * @author Kevin / Symphony Dev Team<br>
@@ -20,8 +19,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Ipv4AddressDTO {
 	@JsonProperty("ipaddr")
 	private ArrayList<String> ipAddresses;
+
 	@JsonProperty("netmask")
 	private ArrayList<String> netMasks;
+
 	@JsonProperty("gateway")
 	private ArrayList<String> gateWays;
 

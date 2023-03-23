@@ -7,7 +7,6 @@ package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * MicOnColorDTO class provides during the monitoring and controlling process
  * MicOnColorDTO class includes color value
  *
  * @author Kevin / Symphony Dev Team<br>

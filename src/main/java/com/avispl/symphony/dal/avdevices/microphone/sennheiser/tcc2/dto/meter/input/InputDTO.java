@@ -6,7 +6,6 @@ package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.meter.i
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * InputDTO class provides during the monitoring and controlling process
  * InputDTO class includes peak value
  *
  * @author Kevin / Symphony Dev Team<br>

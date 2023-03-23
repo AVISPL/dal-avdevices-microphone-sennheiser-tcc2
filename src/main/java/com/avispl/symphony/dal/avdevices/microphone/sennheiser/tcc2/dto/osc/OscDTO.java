@@ -6,7 +6,6 @@ package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.osc;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * OscDTO class provides during the monitoring and controlling process
  * OscDTO class includes the version value
  *
  * @author Kevin / Symphony Dev Team<br>
