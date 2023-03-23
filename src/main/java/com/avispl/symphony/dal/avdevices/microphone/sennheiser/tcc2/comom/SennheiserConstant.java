@@ -38,22 +38,23 @@ public class SennheiserConstant {
 	public static final String LED_BRIGHTNESS = "LEDBrightness";
 	public static final String DEVICE_RESTART = "DeviceRestart";
 	public static final String AUDIO_MUTE = "AudioMute";
-	public static final String VOICE_LIFT = "VoiceLift";
+	public static final String TRUE_VOICE_LIFT = "TrueVoiceLift";
 	public static final String INPUT_LEVEL_GAIN = "InputLevelGain";
 	public static final String MIC_ON_LED_COLOR = "LEDMicOnColor";
 	public static final String MIC_MUTE_LED_COLOR = "LEDMicMuteLColor";
 	public static final String LED_CUSTOM_COLOR = "LEDCustomColor";
 	public static final String FAR_END_ACTIVITY_LED_MODE = "FarEndActivityLEDMode";
-	public static final String AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE ="AudioSettings#InputLevelGainCurrentValue";
-	public static final String DEVICE_SETTINGS_LED_BRIGHTNESS_CURRENT_VALUE ="DeviceSettings#LEDBrightnessCurrentValue";
-	public static final String INPUT_LEVEL_GAIN_CURRENT_VALUE ="InputLevelGainCurrentValue";
-	public static final String LED_BRIGHTNESS_CURRENT_VALUE ="LEDBrightnessCurrentValue";
-	public static final String DEVICE_SETTINGS ="DeviceSettings";
-	public static final String AUDIO_SETTINGS ="AudioSettings";
+	public static final String AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE = "AudioSettings#InputLevelGainCurrentValue";
+	public static final String DEVICE_SETTINGS_LED_BRIGHTNESS_CURRENT_VALUE = "DeviceSettings#LEDBrightnessCurrentValue";
+	public static final String INPUT_LEVEL_GAIN_CURRENT_VALUE = "InputLevelGainCurrentValue";
+	public static final String LED_BRIGHTNESS_CURRENT_VALUE = "LEDBrightnessCurrentValue";
+	public static final String DEVICE_SETTINGS = "DeviceSettings";
+	public static final String AUDIO_SETTINGS = "AudioSettings";
 	public static final String EMPTY = "";
 	public static final String HASH = "#";
-	public static final String QUOTES ="\"";
-	public static final String POINT = "\\.";
+	public static final String QUOTES = "\"";
+	public static final String SPACE = " ";
+	public static final String SPACE_REGEX = "\\s";
 	public static final String RESTART = "Restart";
 	public static final String RESTARTING = "Restarting";
 	public static final String BLINK = "Blink";
@@ -79,5 +80,5 @@ public class SennheiserConstant {
 	public static int TIME_OUT_COUNT = 10;
 	public static int ORDINAL_TO_INDEX_CONVERT_FACTOR = 1;
 	public static String IS_VALID_CONFIG_MANAGEMENT = "true";
-
+	public static String GAIN_UNIT = " dB";
 }

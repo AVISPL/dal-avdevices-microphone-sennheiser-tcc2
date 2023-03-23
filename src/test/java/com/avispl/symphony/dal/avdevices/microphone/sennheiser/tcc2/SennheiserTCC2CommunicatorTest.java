@@ -3,7 +3,6 @@
  */
 package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2;
 
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import com.avispl.symphony.api.dal.dto.control.AdvancedControllableProperty;
 import com.avispl.symphony.api.dal.dto.control.ControllableProperty;
 import com.avispl.symphony.api.dal.dto.monitor.ExtendedStatistics;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserConstant;
@@ -108,7 +106,7 @@ public class SennheiserTCC2CommunicatorTest {
 		sennheiserTCC2Communicator.setConfigManagement("true");
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 
-		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.VOICE_LIFT;
+		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.TRUE_VOICE_LIFT;
 		String value = "0";
 		ControllableProperty controllableProperty = new ControllableProperty();
 		controllableProperty.setProperty(property);
@@ -180,7 +178,7 @@ public class SennheiserTCC2CommunicatorTest {
 
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 		Map<String, String> statistics = extendedStatistic.getStatistics();
-		Assertions.assertEquals("-60", statistics.get(property));
+		Assertions.assertEquals("-60 dB", statistics.get(property));
 	}
 
 	/**
@@ -201,7 +199,7 @@ public class SennheiserTCC2CommunicatorTest {
 
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 		Map<String, String> statistics = extendedStatistic.getStatistics();
-		Assertions.assertEquals("10", statistics.get(property));
+		Assertions.assertEquals("10 dB", statistics.get(property));
 	}
 
 	/**

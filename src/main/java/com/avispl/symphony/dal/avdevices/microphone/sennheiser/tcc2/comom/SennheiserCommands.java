@@ -4,13 +4,13 @@
 package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom;
 
 /**
- * SennheiserCommandList class provides the commands list during the monitoring and controlling process
+ * SennheiserCommands class provides the commands list during the monitoring and controlling process
  *
  * @author Kevin / Symphony Dev Team<br>
  * Created on 3/14/2023
  * @since 1.0.0
  */
-public class SennheiserCommandList {
+public class SennheiserCommands {
 	public static final String SERIAL_NUMBER = "{\"device\":{\"identity\":{\"serial\":null}}}\"";
 	public static final String PRODUCT_NAME = "{\"device\":{\"identity\":{\"product\":null}}}\"";
 	public static final String VENDOR = "{\"device\":{\"identity\":{\"vendor\":null}}}\"";

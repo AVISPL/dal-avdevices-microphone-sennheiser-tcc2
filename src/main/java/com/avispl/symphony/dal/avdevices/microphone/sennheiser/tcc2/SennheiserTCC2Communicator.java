@@ -36,7 +36,7 @@ import com.avispl.symphony.api.dal.dto.monitor.Statistics;
 import com.avispl.symphony.api.dal.error.ResourceNotReachableException;
 import com.avispl.symphony.api.dal.monitor.Monitorable;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserConstant;
-import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserLEDColorEnum;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserLEDColorMetric;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserPropertiesList;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.DeviceWrapper;
 import com.avispl.symphony.dal.communicator.SocketCommunicator;
@@ -266,7 +266,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 					sendRequestToControlValue(propertyItem, SennheiserConstant.TRUE);
 					break;
 				case FAR_END_ACTIVITY_LED_MODE:
-				case VOICE_LIFT:
+				case TRUE_VOICE_LIFT:
 				case AUDIO_MUTE:
 					String switchStatus = SennheiserConstant.FALSE;
 					if (String.valueOf(SennheiserConstant.NUMBER_ONE).equals(value)) {
@@ -287,7 +287,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 					break;
 				case INPUT_LEVEL_GAIN:
 					sendRequestToControlValue(propertyItem, value);
-					value = String.valueOf((int) Float.parseFloat(value));
+					value = (int) Float.parseFloat(value) + SennheiserConstant.GAIN_UNIT;
 					stats.put(group + SennheiserConstant.INPUT_LEVEL_GAIN_CURRENT_VALUE, value);
 					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, value);
 					break;
@@ -310,10 +310,10 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	}
 
 	/**
+	 * {@inheritDoc}
 	 * This method is recalled by Symphony to control a list of properties
 	 *
 	 * @param controllableProperties This is the list of properties to be controlled
-	 * @return byte This returns the calculated xor checksum.
 	 */
 	@Override
 	public void controlProperties(List<ControllableProperty> controllableProperties) throws Exception {
@@ -406,8 +406,8 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 
 	/**
 	 * Using multi thread to implement get request
-	 * Thread 1 : Retrieve data
-	 * Thread 2 : Waiting for status of thread 1
+	 * Thread 1 retrieves data.
+	 * Thread 2 manage the request timeout of thread 1
 	 */
 	private void retrieveMonitoringAndControllingData() {
 		List<SennheiserPropertiesList> commands = Arrays.asList(SennheiserPropertiesList.values());
@@ -457,20 +457,20 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	 * Retrieve data by command name
 	 *
 	 * @param command the command is command to send the request get the data
-	 * @return String is data response from the device or None if response fail
 	 */
-	private String retrieveDataByCommandName(SennheiserPropertiesList command) {
+	private void retrieveDataByCommandName(SennheiserPropertiesList command) {
 		try {
 			byte[] response = send(command.getCommand().getBytes(StandardCharsets.UTF_8));
+			if (response == null || response.length == 0) {
+				updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, command.getName(), SennheiserConstant.NONE);
+				return;
+			}
 			DeviceWrapper deviceWrapper = objectMapper.readValue(response, DeviceWrapper.class);
 			String value = deviceWrapper.getObjectByName(command);
 			updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, command.getName(), value);
-			return value;
 		} catch (Exception e) {
 			logger.error(String.format("Error when retrieving property name: %s", command.getName()), e);
-			failedMonitor.add(command.getName());
 			updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, command.getName(), SennheiserConstant.NONE);
-			return SennheiserConstant.NONE;
 		}
 	}
 
@@ -515,17 +515,17 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 						addAdvanceControlProperties(advancedControllableProperties, stats,
 								createSlider(stats, nameProperty, SennheiserConstant.MIN_INPUT_LEVEL_GAIN_LABEL, SennheiserConstant.MAX_INPUT_LEVEL_GAIN_LABEL, SennheiserConstant.MIN_INPUT_LEVEL_GAIN_VALUE,
 										SennheiserConstant.MAX_INPUT_LEVEL_GAIN_VALUE, Float.parseFloat(value)));
-						stats.put(SennheiserConstant.AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE, value);
+						stats.put(SennheiserConstant.AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE, value+SennheiserConstant.GAIN_UNIT);
 						break;
 					case MIC_ON_LED_COLOR:
 					case MIC_MUTE_LED_COLOR:
 					case LED_CUSTOM_COLOR:
-						String[] colorArray = Arrays.stream(SennheiserLEDColorEnum.values()).map(SennheiserLEDColorEnum::getName).toArray(String[]::new);
+						String[] colorArray = Arrays.stream(SennheiserLEDColorMetric.values()).map(SennheiserLEDColorMetric::getName).toArray(String[]::new);
 						nameProperty = deviceSettingsGroup + namePropertyCurrent;
-						addAdvanceControlProperties(advancedControllableProperties, stats, createDropdown(nameProperty, colorArray, SennheiserLEDColorEnum.getNameByValue(value)));
+						addAdvanceControlProperties(advancedControllableProperties, stats, createDropdown(nameProperty, colorArray, SennheiserLEDColorMetric.getNameByValue(value)));
 						break;
 					case AUDIO_MUTE:
-					case VOICE_LIFT:
+					case TRUE_VOICE_LIFT:
 					case FAR_END_ACTIVITY_LED_MODE:
 						nameProperty = audioSettingsGroup + namePropertyCurrent;
 						addAdvanceControlProperties(advancedControllableProperties, stats,
@@ -539,11 +539,11 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	}
 
 	/**
-	 * Update cache device data
+	 * Update cached device data
 	 *
 	 * @param cacheMapOfPropertyNameAndValue the cacheMapOfPropertyNameAndValue are map key and value of it
 	 * @param property the key is property name
-	 * @param value the value is String value
+	 * @param value value is the property's value
 	 */
 	private void updateCachedDeviceData(Map<String, String> cacheMapOfPropertyNameAndValue, String property, String value) {
 		cacheMapOfPropertyNameAndValue.remove(property);
@@ -556,8 +556,6 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	 * @param advancedControllableProperties advancedControllableProperties is the list that store all controllable properties
 	 * @param stats store all statistics
 	 * @param property the property is item advancedControllableProperties
-	 * @return String response
-	 * @throws IllegalStateException when exception occur
 	 */
 	private void addAdvanceControlProperties(List<AdvancedControllableProperty> advancedControllableProperties, Map<String, String> stats, AdvancedControllableProperty property) {
 		if (property != null) {

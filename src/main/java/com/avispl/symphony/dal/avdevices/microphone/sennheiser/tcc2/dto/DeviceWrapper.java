@@ -11,12 +11,16 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserConstant;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserPropertiesList;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.AudioDTO;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.DeviceDTO;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.identity.IdentityDTO;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.meter.MeterDTO;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.osc.OscDTO;
 
@@ -27,6 +31,7 @@ import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.osc.OscD
  * Created on 3/14/2023
  * @since 1.0.0
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DeviceWrapper {
 	private DeviceDTO device;
 	private OscDTO osc;
@@ -116,31 +121,31 @@ public class DeviceWrapper {
 	public String getObjectByName(SennheiserPropertiesList commandEnum) {
 		switch (commandEnum) {
 			case SERIAL_NUMBER:
-				return device.getIdentity().getSerial();
+				return Optional.ofNullable(device.getIdentity()).map(IdentityDTO::getSerial).orElse(SennheiserConstant.NONE);
 			case PRODUCT_NAME:
-				return device.getIdentity().getProduct();
+				return Optional.ofNullable(device.getIdentity()).map(IdentityDTO::getProduct).orElse(SennheiserConstant.NONE);
 			case VENDOR:
-				return device.getIdentity().getVendor();
+				return Optional.ofNullable(device.getIdentity()).map(IdentityDTO::getVendor).orElse(SennheiserConstant.NONE);
 			case FIRMWARE_VERSION:
-				return device.getIdentity().getFirmware();
+				return Optional.ofNullable(device.getIdentity()).map(IdentityDTO::getFirmware).orElse(SennheiserConstant.NONE);
 			case HARDWARE_REVISION:
-				return device.getIdentity().getHwRevision();
+				return Optional.ofNullable(device.getIdentity()).map(IdentityDTO::getHwRevision).orElse(SennheiserConstant.NONE);
 			case OSC_VERSION:
-				return osc.getVersion();
+				return Optional.ofNullable(osc).map(OscDTO::getVersion).orElse(SennheiserConstant.NONE);
 			case DEVICE_DATE:
-				return device.getDate();
+				return Optional.ofNullable(device).map(DeviceDTO::getDate).orElse(SennheiserConstant.NONE);
 			case DEVICE_TIME:
 				return convertNumberOfSecondsToTimeStamp(device.getTime());
 			case DEVICE_INFORMATION:
-				return device.getSystem();
+				return Optional.ofNullable(device).map(DeviceDTO::getSystem).orElse(SennheiserConstant.NONE);
 			case DEVICE_POSITION:
-				return device.getPosition();
+				return capitalizeWords(Optional.ofNullable(device).map(DeviceDTO::getPosition).orElse(SennheiserConstant.NONE));
 			case DEVICE_NAME:
-				return device.getName();
+				return Optional.ofNullable(device).map(DeviceDTO::getName).orElse(SennheiserConstant.NONE);
 			case DEVICE_LOCATION:
-				return device.getLocation();
+				return Optional.ofNullable(device).map(DeviceDTO::getLocation).orElse(SennheiserConstant.NONE);
 			case DEVICE_LANGUAGE:
-				return device.getLanguage();
+				return Optional.ofNullable(device).map(DeviceDTO::getLanguage).orElse(SennheiserConstant.NONE);
 			case ROOM_IN_USE:
 				return String.valueOf(audio.isRoomInUse());
 			case BEAM_ELEVATION:
@@ -169,7 +174,7 @@ public class DeviceWrapper {
 				return String.valueOf(device.isRestart());
 			case AUDIO_MUTE:
 				return String.valueOf(audio.isMute());
-			case VOICE_LIFT:
+			case TRUE_VOICE_LIFT:
 				return String.valueOf(audio.getVoiceLift().isActive());
 			case MIC_MUTE_LED_COLOR:
 				return device.getLed().getMicMuteColor().getColor();
@@ -215,5 +220,25 @@ public class DeviceWrapper {
 			}
 		}
 		return result.toString();
+	}
+
+	/**
+	 * capitalize the first letter of the word
+	 * @param input value input
+	 * @return string after converting
+	 */
+	private String capitalizeWords(String input) {
+		String[] words = input.split(SennheiserConstant.SPACE_REGEX);
+		StringBuilder output = new StringBuilder();
+		for (String word : words) {
+			if (word.length() > 0) {
+				output.append(Character.toUpperCase(word.charAt(0)));
+				if (word.length() > 1) {
+					output.append(word.substring(1));
+				}
+				output.append(SennheiserConstant.SPACE);
+			}
+		}
+		return output.toString().trim();
 	}
 }
