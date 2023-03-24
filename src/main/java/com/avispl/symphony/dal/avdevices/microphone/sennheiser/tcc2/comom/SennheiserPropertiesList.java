@@ -41,7 +41,7 @@ public enum SennheiserPropertiesList {
 	LED_BRIGHTNESS(SennheiserConstant.LED_BRIGHTNESS, SennheiserCommands.LED_BRIGHTNESS_CONTROLLING, true),
 	DEVICE_RESTART(SennheiserConstant.DEVICE_RESTART, SennheiserCommands.DEVICE_RESTART_CONTROLLING, true),
 	AUDIO_MUTE(SennheiserConstant.AUDIO_MUTE, SennheiserCommands.AUDIO_MUTE_CONTROLLING, true),
-	TRUE_VOICE_LIFT(SennheiserConstant.TRUE_VOICE_LIFT, SennheiserCommands.VOICE_LIFT_CONTROLLING, true),
+	TRU_VOICE_LIFT(SennheiserConstant.TRU_VOICE_LIFT, SennheiserCommands.VOICE_LIFT_CONTROLLING, true),
 	INPUT_LEVEL_GAIN(SennheiserConstant.INPUT_LEVEL_GAIN, SennheiserCommands.INPUT_LEVEL_GAIN_CONTROLLING, true),
 	MIC_ON_LED_COLOR(SennheiserConstant.MIC_ON_LED_COLOR, SennheiserCommands.MIC_ON_LED_COLOR_CONTROLLING, true),
 	MIC_MUTE_LED_COLOR(SennheiserConstant.MIC_MUTE_LED_COLOR, SennheiserCommands.MIC_MUTE_LED_COLOR_CONTROLLING, true),

@@ -266,7 +266,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 					sendRequestToControlValue(propertyItem, SennheiserConstant.TRUE);
 					break;
 				case FAR_END_ACTIVITY_LED_MODE:
-				case TRUE_VOICE_LIFT:
+				case TRU_VOICE_LIFT:
 				case AUDIO_MUTE:
 					String switchStatus = SennheiserConstant.FALSE;
 					if (String.valueOf(SennheiserConstant.NUMBER_ONE).equals(value)) {
@@ -287,16 +287,15 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 					break;
 				case INPUT_LEVEL_GAIN:
 					sendRequestToControlValue(propertyItem, value);
-					value = (int) Float.parseFloat(value) + SennheiserConstant.GAIN_UNIT;
+					value = String.valueOf((int) Float.parseFloat(value));
 					stats.put(group + SennheiserConstant.INPUT_LEVEL_GAIN_CURRENT_VALUE, value);
 					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, value);
 					break;
 				case LED_CUSTOM_COLOR:
 				case MIC_MUTE_LED_COLOR:
 				case MIC_ON_LED_COLOR:
-					value = value.toUpperCase();
 					StringBuilder upperValue = new StringBuilder();
-					upperValue.append(SennheiserConstant.QUOTES).append(value).append(SennheiserConstant.QUOTES);
+					upperValue.append(SennheiserConstant.QUOTES).append(value.toUpperCase()).append(SennheiserConstant.QUOTES);
 					sendRequestToControlValue(propertyItem, upperValue.toString());
 					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, value);
 					break;
@@ -490,7 +489,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 		for (SennheiserPropertiesList command : SennheiserPropertiesList.values()) {
 			namePropertyCurrent = command.getName();
 			value = localCacheMapOfPropertyNameAndValue.get(namePropertyCurrent);
-			if (StringUtils.isNotNullOrEmpty(value)) {
+			if (StringUtils.isNotNullOrEmpty(value) || SennheiserConstant.NONE.equals(value)) {
 				switch (command) {
 					case IDENTIFY_DEVICE:
 						nameProperty = deviceSettingsGroup + namePropertyCurrent;
@@ -515,7 +514,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 						addAdvanceControlProperties(advancedControllableProperties, stats,
 								createSlider(stats, nameProperty, SennheiserConstant.MIN_INPUT_LEVEL_GAIN_LABEL, SennheiserConstant.MAX_INPUT_LEVEL_GAIN_LABEL, SennheiserConstant.MIN_INPUT_LEVEL_GAIN_VALUE,
 										SennheiserConstant.MAX_INPUT_LEVEL_GAIN_VALUE, Float.parseFloat(value)));
-						stats.put(SennheiserConstant.AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE, value+SennheiserConstant.GAIN_UNIT);
+						stats.put(SennheiserConstant.AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE, value);
 						break;
 					case MIC_ON_LED_COLOR:
 					case MIC_MUTE_LED_COLOR:
@@ -525,7 +524,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 						addAdvanceControlProperties(advancedControllableProperties, stats, createDropdown(nameProperty, colorArray, SennheiserLEDColorMetric.getNameByValue(value)));
 						break;
 					case AUDIO_MUTE:
-					case TRUE_VOICE_LIFT:
+					case TRU_VOICE_LIFT:
 					case FAR_END_ACTIVITY_LED_MODE:
 						nameProperty = audioSettingsGroup + namePropertyCurrent;
 						addAdvanceControlProperties(advancedControllableProperties, stats,

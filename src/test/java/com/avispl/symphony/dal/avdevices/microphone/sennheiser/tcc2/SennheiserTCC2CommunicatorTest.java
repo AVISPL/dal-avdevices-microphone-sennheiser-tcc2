@@ -106,7 +106,7 @@ public class SennheiserTCC2CommunicatorTest {
 		sennheiserTCC2Communicator.setConfigManagement("true");
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 
-		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.TRUE_VOICE_LIFT;
+		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.TRU_VOICE_LIFT;
 		String value = "0";
 		ControllableProperty controllableProperty = new ControllableProperty();
 		controllableProperty.setProperty(property);
@@ -178,7 +178,7 @@ public class SennheiserTCC2CommunicatorTest {
 
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 		Map<String, String> statistics = extendedStatistic.getStatistics();
-		Assertions.assertEquals("-60 dB", statistics.get(property));
+		Assertions.assertEquals("-60", statistics.get(property));
 	}
 
 	/**
@@ -199,7 +199,7 @@ public class SennheiserTCC2CommunicatorTest {
 
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 		Map<String, String> statistics = extendedStatistic.getStatistics();
-		Assertions.assertEquals("10 dB", statistics.get(property));
+		Assertions.assertEquals("10", statistics.get(property));
 	}
 
 	/**
@@ -256,13 +256,13 @@ public class SennheiserTCC2CommunicatorTest {
 		ControllableProperty controllableProperty = new ControllableProperty();
 		String property = SennheiserConstant.DEVICE_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.MIC_ON_LED_COLOR;
 
-		String value = "Green";
+		String value = "Red";
 		controllableProperty.setProperty(property);
 		controllableProperty.setValue(value);
 		sennheiserTCC2Communicator.controlProperty(controllableProperty);
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 		Map<String, String> statistics = extendedStatistic.getStatistics();
-		Assertions.assertEquals(value.toUpperCase(), statistics.get(property));
+		Assertions.assertEquals(value, statistics.get(property));
 	}
 
 	/**
@@ -283,6 +283,6 @@ public class SennheiserTCC2CommunicatorTest {
 
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 		Map<String, String> statistics = extendedStatistic.getStatistics();
-		Assertions.assertEquals(value.toUpperCase(), statistics.get(property));
+		Assertions.assertEquals(value, statistics.get(property));
 	}
 }

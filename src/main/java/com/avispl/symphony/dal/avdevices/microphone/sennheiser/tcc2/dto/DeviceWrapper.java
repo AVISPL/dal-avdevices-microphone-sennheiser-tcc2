@@ -21,6 +21,9 @@ import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.Sennhe
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.AudioDTO;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.DeviceDTO;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.identity.IdentityDTO;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.led.CustomColorDTO;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.led.MicMuteColorDTO;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.led.MicOnColorDTO;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.meter.MeterDTO;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.osc.OscDTO;
 
@@ -147,15 +150,15 @@ public class DeviceWrapper {
 			case DEVICE_LANGUAGE:
 				return Optional.ofNullable(device).map(DeviceDTO::getLanguage).orElse(SennheiserConstant.NONE);
 			case ROOM_IN_USE:
-				return String.valueOf(audio.isRoomInUse());
+				return Optional.ofNullable(audio).map(audioDTO -> String.valueOf(audioDTO.isRoomInUse())).orElse(SennheiserConstant.NONE);
 			case BEAM_ELEVATION:
-				return String.valueOf(meter.getBeam().getElevation());
+				return Optional.ofNullable(meter.getBeam()).map(beamDTO -> String.valueOf(beamDTO.getElevation())).orElse(SennheiserConstant.NONE);
 			case BEAM_AZIMUTH:
-				return String.valueOf(meter.getBeam().getAzimuth());
+				return Optional.ofNullable(meter.getBeam()).map(beamDTO -> String.valueOf(beamDTO.getAzimuth())).orElse(SennheiserConstant.NONE);
 			case INPUT_PEAK_LEVEL:
-				return String.valueOf(meter.getInput().getPeak());
+				return Optional.ofNullable(meter.getInput()).map(inputDTO -> String.valueOf(inputDTO.getPeak())).orElse(SennheiserConstant.NONE);
 			case DANTE_AEC_REFERENCE_RMS_LEVEL:
-				return String.valueOf(meter.getReference().getRms());
+				return Optional.ofNullable(meter.getReference()).map(referenceDTO -> String.valueOf(referenceDTO.getRms())).orElse(SennheiserConstant.NONE);
 			case IPV4_ADDRESS:
 				return convertListToString(device.getNetwork().getIpv4Address().getIpAddresses());
 			case IPV4_DEFAULT_GATEWAY:
@@ -167,25 +170,25 @@ public class DeviceWrapper {
 			case IPV4_INTERFACE_NAME:
 				return convertListToString(device.getNetwork().getEthernet().getInterfaceNames());
 			case IDENTIFY_DEVICE:
-				return String.valueOf(device.getIdentification().isVisual());
+				return Optional.ofNullable(device.getIdentification()).map(identificationDTO -> String.valueOf(identificationDTO.isVisual())).orElse(SennheiserConstant.NONE);
 			case LED_BRIGHTNESS:
-				return String.valueOf(device.getLed().getBrightness());
+				return Optional.ofNullable(device.getLed()).map(ledDTO -> String.valueOf(ledDTO.getBrightness())).orElse(SennheiserConstant.NONE);
 			case DEVICE_RESTART:
-				return String.valueOf(device.isRestart());
+				return Optional.ofNullable(device).map(deviceDTO -> String.valueOf(deviceDTO.isRestart())).orElse(SennheiserConstant.NONE);
 			case AUDIO_MUTE:
-				return String.valueOf(audio.isMute());
-			case TRUE_VOICE_LIFT:
-				return String.valueOf(audio.getVoiceLift().isActive());
+				return Optional.ofNullable(audio).map(audioDTO -> String.valueOf(audioDTO.isMute())).orElse(SennheiserConstant.NONE);
+			case TRU_VOICE_LIFT:
+				return Optional.ofNullable(audio.getVoiceLift()).map(voiceLiftDTO -> String.valueOf(voiceLiftDTO.isActive())).orElse(SennheiserConstant.NONE);
 			case MIC_MUTE_LED_COLOR:
-				return device.getLed().getMicMuteColor().getColor();
+				return Optional.ofNullable(device.getLed().getMicMuteColor()).map(MicMuteColorDTO::getColor).orElse(SennheiserConstant.NONE);
 			case MIC_ON_LED_COLOR:
-				return device.getLed().getMicOnColor().getColor();
+				return Optional.ofNullable(device.getLed().getMicOnColor()).map(MicOnColorDTO::getColor).orElse(SennheiserConstant.NONE);
 			case LED_CUSTOM_COLOR:
-				return device.getLed().getCustomColor().getColor();
+				return Optional.ofNullable(device.getLed().getCustomColor()).map(CustomColorDTO::getColor).orElse(SennheiserConstant.NONE);
 			case FAR_END_ACTIVITY_LED_MODE:
-				return String.valueOf(device.getLed().isActivity());
+				return Optional.ofNullable(device.getLed()).map(ledDTO -> String.valueOf(ledDTO.isActivity())).orElse(SennheiserConstant.NONE);
 			case INPUT_LEVEL_GAIN:
-				return String.valueOf(audio.getReference().getGain());
+				return Optional.ofNullable(audio.getReference()).map(referenceDTO -> String.valueOf(referenceDTO.getGain())).orElse(SennheiserConstant.NONE);
 		}
 		return null;
 	}
@@ -211,6 +214,10 @@ public class DeviceWrapper {
 	 * @return String after converting
 	 */
 	private String convertListToString(List<String> list) {
+		if (list == null) {
+			return SennheiserConstant.NONE;
+		}
+
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < list.size(); i++) {
 			if (i == list.size() - 1) {
@@ -224,6 +231,7 @@ public class DeviceWrapper {
 
 	/**
 	 * capitalize the first letter of the word
+	 *
 	 * @param input value input
 	 * @return string after converting
 	 */
