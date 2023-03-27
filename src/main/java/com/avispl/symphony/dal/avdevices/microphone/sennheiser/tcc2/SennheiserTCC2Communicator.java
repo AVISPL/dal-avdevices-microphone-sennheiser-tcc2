@@ -50,8 +50,8 @@ import com.avispl.symphony.dal.util.StringUtils;
  *
  * Monitoring Aggregated Device:
  * <ul>
- * <li> - Manufacturer(Vendor)</li>
- * <li> - ProductName Version</li>
+ * <li> - Manufacturer</li>
+ * <li> - ProductName</li>
  * <li> - SerialNumber</li>
  * <li> - HardwareRevision</li>
  * <li> - FirmwareVersion</li>
@@ -72,7 +72,19 @@ import com.avispl.symphony.dal.util.StringUtils;
  * <li> - BeamElevation</li>
  * <li> - BeamAzimuth</li>
  * <li> - InputPeakLevel</li>
- * <li> - DanteAECReferenceRMSLevel</li>
+ * <li> - IpMode</li>
+ * <li> - DantePrimaryIpMode</li>
+ * <li> - DanteSecondaryIpMode</li>
+ * <li> - DantePrimaryIpAddress</li>
+ * <li> - DanteSecondaryIpAddress</li>
+ * <li> - DantePrimaryMACAddress</li>
+ * <li> - DanteSecondaryMACAddress</li>
+ * <li> - DantePrimaryIpv4InterfaceName</li>
+ * <li> - DanteSecondaryIpv4InterfaceName</li>
+ * <li> - DantePrimaryIpv4DefaultGateway</li>
+ * <li> - DanteSecondaryIpv4DefaultGateway</li>
+ * <li> - DantePrimaryIpv4NetMask</li>
+ * <li> - DanteSecondaryIpv4NetMask</li>
  * </ul>
  *
  * Controlling Aggregated Device:
@@ -482,9 +494,13 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	private void populateMonitoringAndControllingData(Map<String, String> stats, List<AdvancedControllableProperty> advancedControllableProperties) {
 		String deviceSettingsGroup = SennheiserConstant.DEVICE_SETTINGS + SennheiserConstant.HASH;
 		String audioSettingsGroup = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH;
+		String networkGroup = SennheiserConstant.NETWORK + SennheiserConstant.HASH;
+		String networkDantePrimaryGroup = networkGroup + SennheiserConstant.DANTE_PRIMARY;
+		String networkDanteSecondaryGroup = networkGroup + SennheiserConstant.DANTE_SECONDARY;
 		String nameProperty;
 		String namePropertyCurrent;
 		String value;
+		String[] valueArray;
 
 		for (SennheiserPropertiesList command : SennheiserPropertiesList.values()) {
 			namePropertyCurrent = command.getName();
@@ -530,8 +546,43 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 						addAdvanceControlProperties(advancedControllableProperties, stats,
 								createSwitch(nameProperty, SennheiserConstant.TRUE.equals(value) ? 1 : 0, SennheiserConstant.OFF, SennheiserConstant.ON));
 						break;
+					case DANTE_AEC_REFERENCE_RMS_LEVEL:
+					case INPUT_PEAK_LEVEL:
+					case BEAM_AZIMUTH:
+					case BEAM_ELEVATION:
+						nameProperty = audioSettingsGroup + namePropertyCurrent;
+						stats.put(nameProperty, value);
+						break;
+					case IPV4_ADDRESS:
+					case IPV4_DEFAULT_GATEWAY:
+					case IPV4_INTERFACE_NAME:
+					case IPV4_NETMASK:
+					case MAC_ADDRESS:
+						nameProperty = networkGroup + namePropertyCurrent;
+						stats.put(nameProperty, value);
+						break;
+					case IP_MODE:
+						nameProperty = networkGroup + namePropertyCurrent;
+						stats.put(nameProperty, SennheiserConstant.TRUE.equals(value) ? SennheiserConstant.AUTO : SennheiserConstant.MANUAL);
+						break;
+					case DANTE_MAC_ADDRESS:
+					case DANTE_IPV4_DEFAULT_GATEWAY:
+					case DANTE_IPV4_INTERFACE_NAME:
+					case DANTE_IPV4_ADDRESS:
+					case DANTE_IPV4_NETMASK:
+						namePropertyCurrent = namePropertyCurrent.replace(SennheiserConstant.DANTE, SennheiserConstant.EMPTY);
+						valueArray = value.split(SennheiserConstant.COMMA);
+						stats.put(networkDantePrimaryGroup + namePropertyCurrent, valueArray[0]);
+						stats.put(networkDanteSecondaryGroup + namePropertyCurrent, valueArray[1]);
+						break;
+					case DANTE_IP_MODE:
+						namePropertyCurrent = namePropertyCurrent.replace(SennheiserConstant.DANTE, SennheiserConstant.EMPTY);
+						valueArray = value.split(SennheiserConstant.COMMA);
+						stats.put(networkDantePrimaryGroup + namePropertyCurrent, SennheiserConstant.TRUE.equals(valueArray[0]) ? SennheiserConstant.AUTO : SennheiserConstant.MANUAL);
+						stats.put(networkDanteSecondaryGroup + namePropertyCurrent, SennheiserConstant.TRUE.equals(valueArray[1]) ? SennheiserConstant.AUTO : SennheiserConstant.MANUAL);
+						break;
 					default:
-						stats.put(namePropertyCurrent, localCacheMapOfPropertyNameAndValue.get(namePropertyCurrent));
+						stats.put(namePropertyCurrent, value);
 				}
 			}
 		}

@@ -13,7 +13,7 @@ package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom;
 public class SennheiserCommands {
 	public static final String SERIAL_NUMBER = "{\"device\":{\"identity\":{\"serial\":null}}}\"";
 	public static final String PRODUCT_NAME = "{\"device\":{\"identity\":{\"product\":null}}}\"";
-	public static final String VENDOR = "{\"device\":{\"identity\":{\"vendor\":null}}}\"";
+	public static final String MANUFACTURER = "{\"device\":{\"identity\":{\"vendor\":null}}}\"";
 	public static final String HARDWARE_REVISION = "{\"device\":{\"identity\":{\"hw_revision\":null}}}\"";
 	public static final String FIRMWARE_VERSION = "{\"device\":{\"identity\":{\"version\":null}}}\"";
 	public static final String OSC_VERSION = "{\"osc\":{\"version\":null}}\"";
@@ -34,6 +34,13 @@ public class SennheiserCommands {
 	public static final String IPV4_DEFAULT_GATEWAY = "{\"device\":{\"network\":{\"ipv4\":{\"gateway\":null}}}}\"";
 	public static final String MAC_ADDRESS = "{\"device\":{\"network\":{\"ether\":{\"macs\":null}}}}\"";
 	public static final String IPV4_INTERFACE_NAME = "{\"device\":{\"network\":{\"ether\":{\"interfaces\":null}}}}\"";
+	public static final String DANTE_IPV4_INTERFACE_NAME = "{\"audio\":{\"out2\":{\"network\":{\"ether\":{\"interfaces\":null}}}}}\"";
+	public static final String DANTE_IPV4_ADDRESS = "{\"audio\":{\"out2\":{\"network\":{\"ipv4\":{\"ipaddr\":null}}}}}\"";
+	public static final String DANTE_MAC_ADDRESS = "{\"audio\":{\"out2\":{\"network\":{\"ether\":{\"macs\":null}}}}}\"";
+	public static final String DANTE_IPV4_DEFAULT_GATEWAY = "{\"audio\":{\"out2\":{\"network\":{\"ipv4\":{\"gateway\":null}}}}}\"";
+	public static final String DANTE_IPV4_NETMASK = "{\"audio\":{\"out2\":{\"network\":{\"ipv4\":{\"netmask\":null}}}}}\"";
+	public static final String DANTE_IP_MODE = "{\"audio\":{\"out2\":{\"network\":{\"ipv4\":{\"auto\":null}}}}}\"";
+	public static final String IP_MODE = "{\"device\":{\"network\":{\"ipv4\":{\"auto\":null}}}}\"";
 	public static final String IDENTIFY_DEVICE_CONTROLLING = "{\"device\":{\"identification\":{\"visual\":null}}}\"";
 	public static final String LED_BRIGHTNESS_CONTROLLING = "{\"device\":{\"led\":{\"brightness\":null}}}\"";
 	public static final String DEVICE_RESTART_CONTROLLING = "{\"device\":{\"restart\":null}}\"";
