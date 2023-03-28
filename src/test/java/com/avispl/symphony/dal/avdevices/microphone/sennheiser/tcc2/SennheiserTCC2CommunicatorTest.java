@@ -48,20 +48,21 @@ public class SennheiserTCC2CommunicatorTest {
 	 */
 	@Test
 	void testSennheiserTCC2CommunicatorGetStatistic() throws Exception {
+		sennheiserTCC2Communicator.setConfigManagement("true");
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 		Map<String, String> statistics = extendedStatistic.getStatistics();
-		Assert.assertEquals(23, statistics.size());
-		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.VENDOR.getName()));
+		Assert.assertEquals(36, statistics.size());
+		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.MANUFACTURER.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.PRODUCT_NAME.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.SERIAL_NUMBER.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.HARDWARE_REVISION.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.FIRMWARE_VERSION.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.OSC_VERSION.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.MAC_ADDRESS.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.IPV4_ADDRESS.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.IPV4_INTERFACE_NAME.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.IPV4_NETMASK.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.IPV4_DEFAULT_GATEWAY.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK+SennheiserConstant.HASH+SennheiserPropertiesList.MAC_ADDRESS.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK+SennheiserConstant.HASH+SennheiserPropertiesList.IPV4_ADDRESS.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK+SennheiserConstant.HASH+SennheiserPropertiesList.IPV4_INTERFACE_NAME.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK+SennheiserConstant.HASH+SennheiserPropertiesList.IPV4_NETMASK.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK+SennheiserConstant.HASH+SennheiserPropertiesList.IPV4_DEFAULT_GATEWAY.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_DATE.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_TIME.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_INFORMATION.getName()));
@@ -70,10 +71,10 @@ public class SennheiserTCC2CommunicatorTest {
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_LOCATION.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_LANGUAGE.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.ROOM_IN_USE.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.BEAM_AZIMUTH.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.BEAM_ELEVATION.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.INPUT_PEAK_LEVEL.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DANTE_AEC_REFERENCE_RMS_LEVEL.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.AUDIO_SETTINGS+SennheiserConstant.HASH+SennheiserPropertiesList.BEAM_AZIMUTH.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.AUDIO_SETTINGS+SennheiserConstant.HASH+SennheiserPropertiesList.BEAM_ELEVATION.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.AUDIO_SETTINGS+SennheiserConstant.HASH+SennheiserPropertiesList.INPUT_PEAK_LEVEL.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.AUDIO_SETTINGS+SennheiserConstant.HASH+SennheiserPropertiesList.DANTE_AEC_REFERENCE_RMS_LEVEL.getName()));
 	}
 
 	/**
@@ -170,8 +171,8 @@ public class SennheiserTCC2CommunicatorTest {
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 
 		ControllableProperty controllableProperty = new ControllableProperty();
-		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.INPUT_LEVEL_GAIN;
-		String value = "-60.0";
+		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.INPUT_LEVEL_GAIN_PRESET;
+		String value = "-60";
 		controllableProperty.setProperty(property);
 		controllableProperty.setValue(value);
 		sennheiserTCC2Communicator.controlProperty(controllableProperty);
@@ -191,8 +192,8 @@ public class SennheiserTCC2CommunicatorTest {
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 
 		ControllableProperty controllableProperty = new ControllableProperty();
-		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.INPUT_LEVEL_GAIN;
-		String value = "10.0";
+		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.INPUT_LEVEL_GAIN_PRESET;
+		String value = "10";
 		controllableProperty.setProperty(property);
 		controllableProperty.setValue(value);
 		sennheiserTCC2Communicator.controlProperty(controllableProperty);

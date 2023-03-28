@@ -127,7 +127,7 @@ public class DeviceWrapper {
 				return Optional.ofNullable(device.getIdentity()).map(IdentityDTO::getSerial).orElse(SennheiserConstant.NONE);
 			case PRODUCT_NAME:
 				return Optional.ofNullable(device.getIdentity()).map(IdentityDTO::getProduct).orElse(SennheiserConstant.NONE);
-			case VENDOR:
+			case MANUFACTURER:
 				return Optional.ofNullable(device.getIdentity()).map(IdentityDTO::getVendor).orElse(SennheiserConstant.NONE);
 			case FIRMWARE_VERSION:
 				return Optional.ofNullable(device.getIdentity()).map(IdentityDTO::getFirmware).orElse(SennheiserConstant.NONE);
@@ -142,7 +142,7 @@ public class DeviceWrapper {
 			case DEVICE_INFORMATION:
 				return Optional.ofNullable(device).map(DeviceDTO::getSystem).orElse(SennheiserConstant.NONE);
 			case DEVICE_POSITION:
-				return capitalizeWords(Optional.ofNullable(device).map(DeviceDTO::getPosition).orElse(SennheiserConstant.NONE));
+				return capitalizeFirstLetter(Optional.ofNullable(device).map(DeviceDTO::getPosition).orElse(SennheiserConstant.NONE));
 			case DEVICE_NAME:
 				return Optional.ofNullable(device).map(DeviceDTO::getName).orElse(SennheiserConstant.NONE);
 			case DEVICE_LOCATION:
@@ -150,7 +150,7 @@ public class DeviceWrapper {
 			case DEVICE_LANGUAGE:
 				return Optional.ofNullable(device).map(DeviceDTO::getLanguage).orElse(SennheiserConstant.NONE);
 			case ROOM_IN_USE:
-				return Optional.ofNullable(audio).map(audioDTO -> String.valueOf(audioDTO.isRoomInUse())).orElse(SennheiserConstant.NONE);
+				return capitalizeFirstLetter(Optional.ofNullable(audio).map(audioDTO -> String.valueOf(audioDTO.isRoomInUse())).orElse(SennheiserConstant.NONE));
 			case BEAM_ELEVATION:
 				return Optional.ofNullable(meter.getBeam()).map(beamDTO -> String.valueOf(beamDTO.getElevation())).orElse(SennheiserConstant.NONE);
 			case BEAM_AZIMUTH:
@@ -169,6 +169,8 @@ public class DeviceWrapper {
 				return convertListToString(device.getNetwork().getEthernet().getMacAddresses());
 			case IPV4_INTERFACE_NAME:
 				return convertListToString(device.getNetwork().getEthernet().getInterfaceNames());
+			case IP_MODE:
+				return convertListToString(device.getNetwork().getIpv4Address().getIpModes());
 			case IDENTIFY_DEVICE:
 				return Optional.ofNullable(device.getIdentification()).map(identificationDTO -> String.valueOf(identificationDTO.isVisual())).orElse(SennheiserConstant.NONE);
 			case LED_BRIGHTNESS:
@@ -187,8 +189,22 @@ public class DeviceWrapper {
 				return Optional.ofNullable(device.getLed().getCustomColor()).map(CustomColorDTO::getColor).orElse(SennheiserConstant.NONE);
 			case FAR_END_ACTIVITY_LED_MODE:
 				return Optional.ofNullable(device.getLed()).map(ledDTO -> String.valueOf(ledDTO.isActivity())).orElse(SennheiserConstant.NONE);
-			case INPUT_LEVEL_GAIN:
+			case INPUT_LEVEL_GAIN_STATUS:
+				return Optional.ofNullable(audio.getReference()).map(referenceDTO -> String.valueOf(referenceDTO.isGainStatus())).orElse(SennheiserConstant.NONE);
+			case INPUT_LEVEL_GAIN_PRESET:
 				return Optional.ofNullable(audio.getReference()).map(referenceDTO -> String.valueOf(referenceDTO.getGain())).orElse(SennheiserConstant.NONE);
+			case DANTE_IPV4_ADDRESS:
+				return convertListToString(audio.getOutput().getNetwork().getIpv4Address().getIpAddresses());
+			case DANTE_IPV4_DEFAULT_GATEWAY:
+				return convertListToString(audio.getOutput().getNetwork().getIpv4Address().getGateWays());
+			case DANTE_IPV4_NETMASK:
+				return convertListToString(audio.getOutput().getNetwork().getIpv4Address().getNetMasks());
+			case DANTE_MAC_ADDRESS:
+				return convertListToString(audio.getOutput().getNetwork().getEthernet().getMacAddresses());
+			case DANTE_IPV4_INTERFACE_NAME:
+				return convertListToString(audio.getOutput().getNetwork().getEthernet().getInterfaceNames());
+			case DANTE_IP_MODE:
+				return convertListToString(audio.getOutput().getNetwork().getIpv4Address().getIpModes());
 		}
 		return null;
 	}
@@ -223,7 +239,7 @@ public class DeviceWrapper {
 			if (i == list.size() - 1) {
 				result.append(list.get(i));
 			} else {
-				result.append(list.get(i)).append(",");
+				result.append(list.get(i)).append(SennheiserConstant.COMMA);
 			}
 		}
 		return result.toString();
@@ -235,18 +251,10 @@ public class DeviceWrapper {
 	 * @param input value input
 	 * @return string after converting
 	 */
-	private String capitalizeWords(String input) {
-		String[] words = input.split(SennheiserConstant.SPACE_REGEX);
-		StringBuilder output = new StringBuilder();
-		for (String word : words) {
-			if (word.length() > 0) {
-				output.append(Character.toUpperCase(word.charAt(0)));
-				if (word.length() > 1) {
-					output.append(word.substring(1));
-				}
-				output.append(SennheiserConstant.SPACE);
-			}
+	public static String capitalizeFirstLetter(String input) {
+		if (SennheiserConstant.NONE.equals(input)) {
+			return input;
 		}
-		return output.toString().trim();
+		return input.substring(0, 1).toUpperCase() + input.substring(1);
 	}
 }

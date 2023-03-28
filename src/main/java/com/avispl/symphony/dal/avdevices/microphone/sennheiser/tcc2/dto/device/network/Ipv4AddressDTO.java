@@ -4,6 +4,7 @@
 package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.network;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,6 +26,8 @@ public class Ipv4AddressDTO {
 
 	@JsonProperty("gateway")
 	private ArrayList<String> gateWays;
+	@JsonProperty("auto")
+	private List<String> ipModes;
 
 	/**
 	 * Retrieves {@code {@link #ipAddresses }}
@@ -78,5 +81,23 @@ public class Ipv4AddressDTO {
 	 */
 	public void setGateWays(ArrayList<String> gateWays) {
 		this.gateWays = gateWays;
+	}
+
+	/**
+	 * Retrieves {@code {@link #ipModes}}
+	 *
+	 * @return value of {@link #ipModes}
+	 */
+	public List<String> getIpModes() {
+		return ipModes;
+	}
+
+	/**
+	 * Sets {@code ipModes}
+	 *
+	 * @param ipModes the {@code java.util.List<java.lang.String>} field
+	 */
+	public void setIpModes(List<String> ipModes) {
+		this.ipModes = ipModes;
 	}
 }

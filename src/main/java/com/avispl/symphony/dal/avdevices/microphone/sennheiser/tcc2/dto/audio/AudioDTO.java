@@ -6,6 +6,7 @@ package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.output.OutputDTO;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.reference.ReferenceDTO;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.voice.VoiceLiftDTO;
 
@@ -20,6 +21,9 @@ import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.vo
 public class AudioDTO {
 	@JsonProperty("room_in_use")
 	private boolean roomInUse;
+
+	@JsonProperty("out2")
+	private OutputDTO output;
 	private boolean mute;
 
 	@JsonProperty("voice_lift")
@@ -98,5 +102,23 @@ public class AudioDTO {
 	 */
 	public void setRoomInUse(boolean roomInUse) {
 		this.roomInUse = roomInUse;
+	}
+
+	/**
+	 * Retrieves {@code {@link #output}}
+	 *
+	 * @return value of {@link #output}
+	 */
+	public OutputDTO getOutput() {
+		return output;
+	}
+
+	/**
+	 * Sets {@code output}
+	 *
+	 * @param output the {@code com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.output.OutputDTO} field
+	 */
+	public void setOutput(OutputDTO output) {
+		this.output = output;
 	}
 }

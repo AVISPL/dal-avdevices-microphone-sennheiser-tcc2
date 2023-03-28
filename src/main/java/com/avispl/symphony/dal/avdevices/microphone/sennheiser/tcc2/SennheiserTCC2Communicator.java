@@ -23,6 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.util.CollectionUtils;
 
@@ -50,8 +51,8 @@ import com.avispl.symphony.dal.util.StringUtils;
  *
  * Monitoring Aggregated Device:
  * <ul>
- * <li> - Manufacturer(Vendor)</li>
- * <li> - ProductName Version</li>
+ * <li> - Manufacturer</li>
+ * <li> - ProductName</li>
  * <li> - SerialNumber</li>
  * <li> - HardwareRevision</li>
  * <li> - FirmwareVersion</li>
@@ -72,7 +73,19 @@ import com.avispl.symphony.dal.util.StringUtils;
  * <li> - BeamElevation</li>
  * <li> - BeamAzimuth</li>
  * <li> - InputPeakLevel</li>
- * <li> - DanteAECReferenceRMSLevel</li>
+ * <li> - IpMode</li>
+ * <li> - DantePrimaryIpMode</li>
+ * <li> - DanteSecondaryIpMode</li>
+ * <li> - DantePrimaryIpAddress</li>
+ * <li> - DanteSecondaryIpAddress</li>
+ * <li> - DantePrimaryMACAddress</li>
+ * <li> - DanteSecondaryMACAddress</li>
+ * <li> - DantePrimaryIpv4InterfaceName</li>
+ * <li> - DanteSecondaryIpv4InterfaceName</li>
+ * <li> - DantePrimaryIpv4DefaultGateway</li>
+ * <li> - DanteSecondaryIpv4DefaultGateway</li>
+ * <li> - DantePrimaryIpv4NetMask</li>
+ * <li> - DanteSecondaryIpv4NetMask</li>
  * </ul>
  *
  * Controlling Aggregated Device:
@@ -102,6 +115,8 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	private final Set<String> failedMonitor = new HashSet<>();
 	private ExecutorService fetchingDataExSer;
 	private ExecutorService timeoutManagementExSer;
+	private long lastCommandTimestamp;
+	private int countMonitoringAndControllingCommand = 0;
 
 	/**
 	 * Pool for keeping all the async operations in, to track any operations in progress and cancel them if needed
@@ -112,8 +127,6 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	 * Apply default delay in between of all the commands performed by the adapter.
 	 */
 	private long commandsCoolDownDelay = 200;
-	private long lastCommandTimestamp;
-	private int countMonitoringAndControllingCommand = 0;
 
 	/**
 	 * store configManagement adapter properties
@@ -245,6 +258,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 				return;
 			}
 			isEmergencyDelivery = true;
+			String switchStatus;
 			Map<String, String> stats = this.localExtendedStatistics.getStatistics();
 			List<AdvancedControllableProperty> advancedControllableProperties = this.localExtendedStatistics.getControllableProperties();
 			String value = String.valueOf(controllableProperty.getValue());
@@ -268,7 +282,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 				case FAR_END_ACTIVITY_LED_MODE:
 				case TRU_VOICE_LIFT:
 				case AUDIO_MUTE:
-					String switchStatus = SennheiserConstant.FALSE;
+					switchStatus = SennheiserConstant.FALSE;
 					if (String.valueOf(SennheiserConstant.NUMBER_ONE).equals(value)) {
 						switchStatus = SennheiserConstant.TRUE;
 					}
@@ -285,9 +299,30 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 					stats.put(group + SennheiserConstant.LED_BRIGHTNESS_CURRENT_VALUE, value);
 					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, value);
 					break;
-				case INPUT_LEVEL_GAIN:
+				case INPUT_LEVEL_GAIN_STATUS:
+					switchStatus = SennheiserConstant.TRUE;
+					if (String.valueOf(SennheiserConstant.NUMBER_ONE).equals(value)) {
+						switchStatus = SennheiserConstant.FALSE;
+					}
+					sendRequestToControlValue(propertyItem, switchStatus);
+
+					retrieveDataByCommandName(SennheiserPropertiesList.INPUT_LEVEL_GAIN_PRESET);
+					String gainValue = localCacheMapOfPropertyNameAndValue.get(SennheiserConstant.INPUT_LEVEL_GAIN_PRESET);
+					String nameInputLevelGian = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.INPUT_LEVEL_GAIN_PRESET;
+
+					if (String.valueOf(SennheiserConstant.NUMBER_ONE).equals(value)) {
+						String[] numbers = createDropdownValue(SennheiserConstant.MIN_INPUT_LEVEL_GAIN_VALUE, SennheiserConstant.MAX_INPUT_LEVEL_GAIN_VALUE);
+						String presetValue = getPresetValueDropDown(numbers, value);
+						addAdvanceControlProperties(advancedControllableProperties, stats, createDropdown(nameInputLevelGian, numbers, presetValue), value);
+					} else {
+						advancedControllableProperties.removeIf(item -> nameInputLevelGian.equals(item.getName()));
+						stats.remove(nameInputLevelGian);
+					}
+					stats.put(SennheiserConstant.AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE, gainValue);
+					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, switchStatus);
+					break;
+				case INPUT_LEVEL_GAIN_PRESET:
 					sendRequestToControlValue(propertyItem, value);
-					value = String.valueOf((int) Float.parseFloat(value));
 					stats.put(group + SennheiserConstant.INPUT_LEVEL_GAIN_CURRENT_VALUE, value);
 					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, value);
 					break;
@@ -410,17 +445,18 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	 */
 	private void retrieveMonitoringAndControllingData() {
 		List<SennheiserPropertiesList> commands = Arrays.asList(SennheiserPropertiesList.values());
-		Future manageTimeOutWorkerThread;
 		for (int i = 0; i < commands.size(); i++) {
 			SennheiserPropertiesList commandIndex = commands.get(i);
 			if (!isConfigManagement && commandIndex.isControl()) {
 				continue;
 			}
+			// submit a thread to fetch data from the device.
 			devicesExecutionPool.add(fetchingDataExSer.submit(() -> {
 				retrieveDataByCommandName(commandIndex);
 			}));
 
-			manageTimeOutWorkerThread = timeoutManagementExSer.submit(() -> {
+			//Using 2nd thread to monitor timeouts for commands executed in thread 1
+			Future manageTimeOutWorkerThread = timeoutManagementExSer.submit(() -> {
 				int timeoutCount = 1;
 				while (!devicesExecutionPool.get(devicesExecutionPool.size() - SennheiserConstant.ORDINAL_TO_INDEX_CONVERT_FACTOR).isDone() && timeoutCount <= SennheiserConstant.TIME_OUT_COUNT) {
 					try {
@@ -482,57 +518,111 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	private void populateMonitoringAndControllingData(Map<String, String> stats, List<AdvancedControllableProperty> advancedControllableProperties) {
 		String deviceSettingsGroup = SennheiserConstant.DEVICE_SETTINGS + SennheiserConstant.HASH;
 		String audioSettingsGroup = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH;
-		String nameProperty;
+		String networkGroup = SennheiserConstant.NETWORK + SennheiserConstant.HASH;
+		String networkDantePrimaryGroup = networkGroup + SennheiserConstant.DANTE_PRIMARY;
+		String networkDanteSecondaryGroup = networkGroup + SennheiserConstant.DANTE_SECONDARY;
+		String networkDantePrimary;
+		String networkDanteSecondary;
 		String namePropertyCurrent;
 		String value;
+		String[] valueArray;
 
 		for (SennheiserPropertiesList command : SennheiserPropertiesList.values()) {
 			namePropertyCurrent = command.getName();
 			value = localCacheMapOfPropertyNameAndValue.get(namePropertyCurrent);
-			if (StringUtils.isNotNullOrEmpty(value) || SennheiserConstant.NONE.equals(value)) {
-				switch (command) {
-					case IDENTIFY_DEVICE:
-						nameProperty = deviceSettingsGroup + namePropertyCurrent;
-						addAdvanceControlProperties(advancedControllableProperties, stats, createButton(nameProperty, SennheiserConstant.BLINK, SennheiserConstant.BLINKING, SennheiserConstant.GRACE_PERIOD));
-						break;
-					case LED_BRIGHTNESS:
-						nameProperty = deviceSettingsGroup + namePropertyCurrent;
+			switch (command) {
+				case IDENTIFY_DEVICE:
+					addAdvanceControlProperties(advancedControllableProperties, stats,
+							createButton(deviceSettingsGroup + namePropertyCurrent, SennheiserConstant.BLINK, SennheiserConstant.BLINKING, SennheiserConstant.GRACE_PERIOD), value);
+					break;
+				case LED_BRIGHTNESS:
+					if (SennheiserConstant.NONE.equals(value) || StringUtils.isNullOrEmpty(value)) {
+						stats.put(deviceSettingsGroup + namePropertyCurrent, SennheiserConstant.NONE);
+					} else {
 						addAdvanceControlProperties(advancedControllableProperties, stats,
-								createSlider(stats, nameProperty, SennheiserConstant.MIN_LEB_BRIGHTNESS_LABEL, SennheiserConstant.MAX_LEB_BRIGHTNESS_LABEL, SennheiserConstant.MIN_LEB_BRIGHTNESS_VALUE,
-										SennheiserConstant.MAX_LEB_BRIGHTNESS_VALUE, Float.parseFloat(value)));
+								createSlider(stats, deviceSettingsGroup + namePropertyCurrent, SennheiserConstant.MIN_LEB_BRIGHTNESS_LABEL, SennheiserConstant.MAX_LEB_BRIGHTNESS_LABEL,
+										SennheiserConstant.MIN_LEB_BRIGHTNESS_VALUE, SennheiserConstant.MAX_LEB_BRIGHTNESS_VALUE, Float.parseFloat(value)), value);
 						if ((int) Float.parseFloat(value) == 0) {
 							value = SennheiserConstant.OFF;
 						}
 						stats.put(SennheiserConstant.DEVICE_SETTINGS_LED_BRIGHTNESS_CURRENT_VALUE, value);
-						break;
-					case DEVICE_RESTART:
-						nameProperty = deviceSettingsGroup + namePropertyCurrent;
-						addAdvanceControlProperties(advancedControllableProperties, stats, createButton(nameProperty, SennheiserConstant.RESTART, SennheiserConstant.RESTARTING, SennheiserConstant.GRACE_PERIOD));
-						break;
-					case INPUT_LEVEL_GAIN:
-						nameProperty = audioSettingsGroup + namePropertyCurrent;
-						addAdvanceControlProperties(advancedControllableProperties, stats,
-								createSlider(stats, nameProperty, SennheiserConstant.MIN_INPUT_LEVEL_GAIN_LABEL, SennheiserConstant.MAX_INPUT_LEVEL_GAIN_LABEL, SennheiserConstant.MIN_INPUT_LEVEL_GAIN_VALUE,
-										SennheiserConstant.MAX_INPUT_LEVEL_GAIN_VALUE, Float.parseFloat(value)));
-						stats.put(SennheiserConstant.AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE, value);
-						break;
-					case MIC_ON_LED_COLOR:
-					case MIC_MUTE_LED_COLOR:
-					case LED_CUSTOM_COLOR:
-						String[] colorArray = Arrays.stream(SennheiserLEDColorMetric.values()).map(SennheiserLEDColorMetric::getName).toArray(String[]::new);
-						nameProperty = deviceSettingsGroup + namePropertyCurrent;
-						addAdvanceControlProperties(advancedControllableProperties, stats, createDropdown(nameProperty, colorArray, SennheiserLEDColorMetric.getNameByValue(value)));
-						break;
-					case AUDIO_MUTE:
-					case TRU_VOICE_LIFT:
-					case FAR_END_ACTIVITY_LED_MODE:
-						nameProperty = audioSettingsGroup + namePropertyCurrent;
-						addAdvanceControlProperties(advancedControllableProperties, stats,
-								createSwitch(nameProperty, SennheiserConstant.TRUE.equals(value) ? 1 : 0, SennheiserConstant.OFF, SennheiserConstant.ON));
-						break;
-					default:
-						stats.put(namePropertyCurrent, localCacheMapOfPropertyNameAndValue.get(namePropertyCurrent));
-				}
+					}
+					break;
+				case DEVICE_RESTART:
+					addAdvanceControlProperties(advancedControllableProperties, stats,
+							createButton(deviceSettingsGroup + namePropertyCurrent, SennheiserConstant.RESTART, SennheiserConstant.RESTARTING, SennheiserConstant.GRACE_PERIOD), value);
+					break;
+				case INPUT_LEVEL_GAIN_STATUS:
+					addAdvanceControlProperties(advancedControllableProperties, stats,
+							createSwitch(audioSettingsGroup + namePropertyCurrent, SennheiserConstant.TRUE.equals(value) ? 0 : 1, SennheiserConstant.AUTO, SennheiserConstant.MANUAL), value);
+					break;
+				case INPUT_LEVEL_GAIN_PRESET:
+					if (SennheiserConstant.FALSE.equals(localCacheMapOfPropertyNameAndValue.get(SennheiserConstant.INPUT_LEVEL_GAIN_STATUS))) {
+						String[] numbers = createDropdownValue(SennheiserConstant.MIN_INPUT_LEVEL_GAIN_VALUE, SennheiserConstant.MAX_INPUT_LEVEL_GAIN_VALUE);
+						String presetValue = getPresetValueDropDown(numbers, value);
+						addAdvanceControlProperties(advancedControllableProperties, stats, createDropdown(audioSettingsGroup + namePropertyCurrent, numbers, presetValue), value);
+					}
+					stats.put(SennheiserConstant.AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE, value);
+					break;
+				case MIC_ON_LED_COLOR:
+				case MIC_MUTE_LED_COLOR:
+				case LED_CUSTOM_COLOR:
+					String[] colorArray = Arrays.stream(SennheiserLEDColorMetric.values()).map(SennheiserLEDColorMetric::getName).toArray(String[]::new);
+					addAdvanceControlProperties(advancedControllableProperties, stats, createDropdown(deviceSettingsGroup + namePropertyCurrent, colorArray, SennheiserLEDColorMetric.getNameByValue(value)),
+							value);
+					break;
+				case AUDIO_MUTE:
+				case TRU_VOICE_LIFT:
+				case FAR_END_ACTIVITY_LED_MODE:
+					addAdvanceControlProperties(advancedControllableProperties, stats,
+							createSwitch(audioSettingsGroup + namePropertyCurrent, SennheiserConstant.TRUE.equals(value) ? 1 : 0, SennheiserConstant.OFF, SennheiserConstant.ON), value);
+					break;
+				case DANTE_AEC_REFERENCE_RMS_LEVEL:
+				case INPUT_PEAK_LEVEL:
+				case BEAM_AZIMUTH:
+				case BEAM_ELEVATION:
+					stats.put(audioSettingsGroup + namePropertyCurrent, value);
+					break;
+				case IPV4_ADDRESS:
+				case IPV4_DEFAULT_GATEWAY:
+				case IPV4_INTERFACE_NAME:
+				case IPV4_NETMASK:
+				case MAC_ADDRESS:
+					stats.put(networkGroup + namePropertyCurrent, value);
+					break;
+				case IP_MODE:
+					stats.put(networkGroup + namePropertyCurrent, SennheiserConstant.TRUE.equals(value) ? SennheiserConstant.AUTO : SennheiserConstant.MANUAL);
+					break;
+				case DANTE_MAC_ADDRESS:
+				case DANTE_IPV4_DEFAULT_GATEWAY:
+				case DANTE_IPV4_INTERFACE_NAME:
+				case DANTE_IPV4_ADDRESS:
+				case DANTE_IPV4_NETMASK:
+					namePropertyCurrent = namePropertyCurrent.replace(SennheiserConstant.DANTE, SennheiserConstant.EMPTY);
+					valueArray = value.split(SennheiserConstant.COMMA);
+					networkDantePrimary = SennheiserConstant.NONE;
+					networkDanteSecondary = SennheiserConstant.NONE;
+					if (valueArray.length >= 2) {
+						networkDantePrimary = getDefaultValueForNullData(valueArray[0]);
+						networkDanteSecondary = getDefaultValueForNullData(valueArray[1]);
+					}
+					stats.put(networkDantePrimaryGroup + namePropertyCurrent, networkDantePrimary);
+					stats.put(networkDanteSecondaryGroup + namePropertyCurrent, networkDanteSecondary);
+					break;
+				case DANTE_IP_MODE:
+					namePropertyCurrent = namePropertyCurrent.replace(SennheiserConstant.DANTE, SennheiserConstant.EMPTY);
+					valueArray = value.split(SennheiserConstant.COMMA);
+					networkDantePrimary = SennheiserConstant.NONE;
+					networkDanteSecondary = SennheiserConstant.NONE;
+					if (valueArray.length >= 2) {
+						networkDantePrimary = SennheiserConstant.TRUE.equals(valueArray[0]) ? SennheiserConstant.AUTO : SennheiserConstant.MANUAL;
+						networkDanteSecondary = SennheiserConstant.TRUE.equals(valueArray[1]) ? SennheiserConstant.AUTO : SennheiserConstant.MANUAL;
+					}
+					stats.put(networkDantePrimaryGroup + namePropertyCurrent, networkDantePrimary);
+					stats.put(networkDanteSecondaryGroup + namePropertyCurrent, networkDanteSecondary);
+					break;
+				default:
+					stats.put(namePropertyCurrent, value);
 			}
 		}
 	}
@@ -555,8 +645,13 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	 * @param advancedControllableProperties advancedControllableProperties is the list that store all controllable properties
 	 * @param stats store all statistics
 	 * @param property the property is item advancedControllableProperties
+	 * @param value changed value
 	 */
-	private void addAdvanceControlProperties(List<AdvancedControllableProperty> advancedControllableProperties, Map<String, String> stats, AdvancedControllableProperty property) {
+	private void addAdvanceControlProperties(List<AdvancedControllableProperty> advancedControllableProperties, Map<String, String> stats, AdvancedControllableProperty property, String value) {
+		if (StringUtils.isNullOrEmpty(value) || SennheiserConstant.NONE.equals(value)) {
+			stats.put(property.getName(), SennheiserConstant.NONE);
+			return;
+		}
 		if (property != null) {
 			for (AdvancedControllableProperty controllableProperty : advancedControllableProperties) {
 				if (controllableProperty.getName().equals(property.getName())) {
@@ -663,6 +758,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 
 	/**
 	 * send request with param attach in command
+	 * Control property name by value
 	 *
 	 * @param propertyItem command
 	 * @param value changed value
@@ -690,11 +786,59 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 
 	/**
 	 * get number commands base on monitor or control
+	 *
+	 * @return a number of command base on isControl
 	 */
 	private int getNumberMonitoringAndControllingCommand() {
 		if (!isConfigManagement) {
 			return Arrays.stream(SennheiserPropertiesList.values()).filter(property -> SennheiserConstant.FALSE.equals(String.valueOf(property.isControl()))).collect(Collectors.toList()).size();
 		}
 		return SennheiserPropertiesList.values().length;
+	}
+
+	/**
+	 * get value in Dropdown from command value
+	 * if array contains input value then return value,else get the closest value in array
+	 *
+	 * @param stringValueArray array
+	 * @param stringValue value
+	 * @return round value
+	 */
+	private String getPresetValueDropDown(String[] stringValueArray, String stringValue) {
+		int[] array = Arrays.stream(stringValueArray).mapToInt(Integer::parseInt).toArray();
+		int value = Integer.parseInt(stringValue);
+		for (int i = 0; i < array.length - 1; i++) {
+			if (value == array[i]) {
+				return String.valueOf(array[i]);
+			} else if (array[i] < value && array[i + 1] > value) {
+				if (Math.abs(array[i] - value) > Math.abs(array[i + 1] - value)) {
+					return String.valueOf(array[i + 1]);
+				}
+				return String.valueOf(array[i]);
+			}
+		}
+		return SennheiserConstant.NONE;
+	}
+
+	/**
+	 * create string array from start value to end value and divide by 3
+	 *
+	 * @param start start value
+	 * @param end end value
+	 * @return string array
+	 */
+	private String[] createDropdownValue(int start, int end) {
+		return IntStream.rangeClosed(start, end).filter(n -> n % 3 == 0).mapToObj(Integer::toString)
+				.toArray(String[]::new);
+	}
+
+	/**
+	 * check value is null or empty
+	 *
+	 * @param value input value
+	 * @return value after checking
+	 */
+	private String getDefaultValueForNullData(String value) {
+		return StringUtils.isNullOrEmpty(value) ? value : SennheiserConstant.NONE;
 	}
 }
