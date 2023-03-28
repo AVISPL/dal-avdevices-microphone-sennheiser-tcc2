@@ -5,6 +5,7 @@
 package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * SennheiserLEDColorMetric enum defined the colors in controlling device for monitoring and controlling process
@@ -50,6 +51,7 @@ public enum SennheiserLEDColorMetric {
 	 * @return uppercase value
 	 */
 	public static String getNameByValue(String value) {
-		return Arrays.stream(SennheiserLEDColorMetric.values()).filter(item -> item.getName().equalsIgnoreCase(value)).findFirst().orElse(null).getName();
+		Optional<SennheiserLEDColorMetric> sennheiserLEDColorMetric = Arrays.stream(SennheiserLEDColorMetric.values()).filter(item -> item.getName().equalsIgnoreCase(value)).findFirst();
+		return sennheiserLEDColorMetric.isPresent() ? sennheiserLEDColorMetric.get().getName() : SennheiserConstant.NONE;
 	}
 }
