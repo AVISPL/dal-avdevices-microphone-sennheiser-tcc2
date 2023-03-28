@@ -32,7 +32,7 @@ public class SennheiserTCC2CommunicatorTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		sennheiserTCC2Communicator = new SennheiserTCC2Communicator();
-		sennheiserTCC2Communicator.setHost("10.34.41.131");
+		sennheiserTCC2Communicator.setHost("127.0.0.1");
 		sennheiserTCC2Communicator.init();
 		sennheiserTCC2Communicator.connect();
 	}

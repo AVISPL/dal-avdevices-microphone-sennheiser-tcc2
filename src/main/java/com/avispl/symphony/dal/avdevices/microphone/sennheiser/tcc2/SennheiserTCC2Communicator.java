@@ -312,8 +312,8 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 
 					if (String.valueOf(SennheiserConstant.NUMBER_ONE).equals(value)) {
 						String[] numbers = createDropdownValue(SennheiserConstant.MIN_INPUT_LEVEL_GAIN_VALUE, SennheiserConstant.MAX_INPUT_LEVEL_GAIN_VALUE);
-						String presetValue = getPresetValueDropDown(numbers, value);
-						addAdvanceControlProperties(advancedControllableProperties, stats, createDropdown(nameInputLevelGian, numbers, presetValue), value);
+						String presetValue = getPresetValueDropDown(numbers, gainValue);
+						addAdvanceControlProperties(advancedControllableProperties, stats, createDropdown(nameInputLevelGian, numbers, presetValue), gainValue);
 					} else {
 						advancedControllableProperties.removeIf(item -> nameInputLevelGian.equals(item.getName()));
 						stats.remove(nameInputLevelGian);
@@ -528,6 +528,9 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 		String[] valueArray;
 
 		for (SennheiserPropertiesList command : SennheiserPropertiesList.values()) {
+			if (!isConfigManagement && command.isControl()) {
+				continue;
+			}
 			namePropertyCurrent = command.getName();
 			value = localCacheMapOfPropertyNameAndValue.get(namePropertyCurrent);
 			switch (command) {
@@ -562,7 +565,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 						String presetValue = getPresetValueDropDown(numbers, value);
 						addAdvanceControlProperties(advancedControllableProperties, stats, createDropdown(audioSettingsGroup + namePropertyCurrent, numbers, presetValue), value);
 					}
-					stats.put(SennheiserConstant.AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE, value);
+					stats.put(SennheiserConstant.AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE, getDefaultValueForNullData(value));
 					break;
 				case MIC_ON_LED_COLOR:
 				case MIC_MUTE_LED_COLOR:
@@ -839,6 +842,6 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	 * @return value after checking
 	 */
 	private String getDefaultValueForNullData(String value) {
-		return StringUtils.isNullOrEmpty(value) ? value : SennheiserConstant.NONE;
+		return StringUtils.isNotNullOrEmpty(value) ? value : SennheiserConstant.NONE;
 	}
 }
