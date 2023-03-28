@@ -23,6 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.util.CollectionUtils;
 
@@ -257,6 +258,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 				return;
 			}
 			isEmergencyDelivery = true;
+			String switchStatus;
 			Map<String, String> stats = this.localExtendedStatistics.getStatistics();
 			List<AdvancedControllableProperty> advancedControllableProperties = this.localExtendedStatistics.getControllableProperties();
 			String value = String.valueOf(controllableProperty.getValue());
@@ -280,7 +282,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 				case FAR_END_ACTIVITY_LED_MODE:
 				case TRU_VOICE_LIFT:
 				case AUDIO_MUTE:
-					String switchStatus = SennheiserConstant.FALSE;
+					switchStatus = SennheiserConstant.FALSE;
 					if (String.valueOf(SennheiserConstant.NUMBER_ONE).equals(value)) {
 						switchStatus = SennheiserConstant.TRUE;
 					}
@@ -297,9 +299,31 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 					stats.put(group + SennheiserConstant.LED_BRIGHTNESS_CURRENT_VALUE, value);
 					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, value);
 					break;
-				case INPUT_LEVEL_GAIN:
+				case INPUT_LEVEL_GAIN_STATUS:
+					switchStatus = SennheiserConstant.TRUE;
+					if (String.valueOf(SennheiserConstant.NUMBER_ONE).equals(value)) {
+						switchStatus = SennheiserConstant.FALSE;
+					}
+					sendRequestToControlValue(propertyItem, switchStatus);
+
+					retrieveDataByCommandName(SennheiserPropertiesList.INPUT_LEVEL_GAIN_PRESET);
+					String gainValue = localCacheMapOfPropertyNameAndValue.get(SennheiserConstant.INPUT_LEVEL_GAIN_PRESET);
+					String nameInputLevelGian = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.INPUT_LEVEL_GAIN_PRESET;
+
+					if (String.valueOf(SennheiserConstant.NUMBER_ONE).equals(value)) {
+						String[] numbers = createDropdownValue(SennheiserConstant.MIN_INPUT_LEVEL_GAIN_VALUE, SennheiserConstant.MAX_INPUT_LEVEL_GAIN_VALUE);
+						String presetValue = getPresetValueDropDown(numbers, value);
+						addAdvanceControlProperties(advancedControllableProperties, stats,
+								createDropdown(nameInputLevelGian, numbers, presetValue));
+					} else {
+						advancedControllableProperties.removeIf(item -> (nameInputLevelGian.equals(item.getName())));
+						stats.remove(nameInputLevelGian);
+					}
+					stats.put(SennheiserConstant.AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE, gainValue);
+					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, switchStatus);
+					break;
+				case INPUT_LEVEL_GAIN_PRESET:
 					sendRequestToControlValue(propertyItem, value);
-					value = String.valueOf((int) Float.parseFloat(value));
 					stats.put(group + SennheiserConstant.INPUT_LEVEL_GAIN_CURRENT_VALUE, value);
 					updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, propertyKey, value);
 					break;
@@ -505,7 +529,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 		for (SennheiserPropertiesList command : SennheiserPropertiesList.values()) {
 			namePropertyCurrent = command.getName();
 			value = localCacheMapOfPropertyNameAndValue.get(namePropertyCurrent);
-			if (StringUtils.isNotNullOrEmpty(value) || SennheiserConstant.NONE.equals(value)) {
+			if (StringUtils.isNotNullOrEmpty(value) && !SennheiserConstant.NONE.equals(value)) {
 				switch (command) {
 					case IDENTIFY_DEVICE:
 						nameProperty = deviceSettingsGroup + namePropertyCurrent;
@@ -525,11 +549,18 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 						nameProperty = deviceSettingsGroup + namePropertyCurrent;
 						addAdvanceControlProperties(advancedControllableProperties, stats, createButton(nameProperty, SennheiserConstant.RESTART, SennheiserConstant.RESTARTING, SennheiserConstant.GRACE_PERIOD));
 						break;
-					case INPUT_LEVEL_GAIN:
+					case INPUT_LEVEL_GAIN_STATUS:
 						nameProperty = audioSettingsGroup + namePropertyCurrent;
 						addAdvanceControlProperties(advancedControllableProperties, stats,
-								createSlider(stats, nameProperty, SennheiserConstant.MIN_INPUT_LEVEL_GAIN_LABEL, SennheiserConstant.MAX_INPUT_LEVEL_GAIN_LABEL, SennheiserConstant.MIN_INPUT_LEVEL_GAIN_VALUE,
-										SennheiserConstant.MAX_INPUT_LEVEL_GAIN_VALUE, Float.parseFloat(value)));
+								createSwitch(nameProperty, SennheiserConstant.TRUE.equals(value) ? 0 : 1, SennheiserConstant.AUTO, SennheiserConstant.MANUAL));
+						break;
+					case INPUT_LEVEL_GAIN_PRESET:
+						if (SennheiserConstant.FALSE.equals(localCacheMapOfPropertyNameAndValue.get(SennheiserConstant.INPUT_LEVEL_GAIN_STATUS))) {
+							nameProperty = audioSettingsGroup + namePropertyCurrent;
+							String[] numbers = createDropdownValue(SennheiserConstant.MIN_INPUT_LEVEL_GAIN_VALUE, SennheiserConstant.MAX_INPUT_LEVEL_GAIN_VALUE);
+							String presetValue = getPresetValueDropDown(numbers, value);
+							addAdvanceControlProperties(advancedControllableProperties, stats, createDropdown(nameProperty, numbers, presetValue));
+						}
 						stats.put(SennheiserConstant.AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE, value);
 						break;
 					case MIC_ON_LED_COLOR:
@@ -572,8 +603,10 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 					case DANTE_IPV4_NETMASK:
 						namePropertyCurrent = namePropertyCurrent.replace(SennheiserConstant.DANTE, SennheiserConstant.EMPTY);
 						valueArray = value.split(SennheiserConstant.COMMA);
-						stats.put(networkDantePrimaryGroup + namePropertyCurrent, valueArray[0]);
-						stats.put(networkDanteSecondaryGroup + namePropertyCurrent, valueArray[1]);
+						if (valueArray.length > 0) {
+							stats.put(networkDantePrimaryGroup + namePropertyCurrent, checkValue(valueArray[0]));
+							stats.put(networkDanteSecondaryGroup + namePropertyCurrent, checkValue(valueArray[1]));
+						}
 						break;
 					case DANTE_IP_MODE:
 						namePropertyCurrent = namePropertyCurrent.replace(SennheiserConstant.DANTE, SennheiserConstant.EMPTY);
@@ -747,5 +780,54 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 			return Arrays.stream(SennheiserPropertiesList.values()).filter(property -> SennheiserConstant.FALSE.equals(String.valueOf(property.isControl()))).collect(Collectors.toList()).size();
 		}
 		return SennheiserPropertiesList.values().length;
+	}
+
+	/**
+	 * get value in Dropdown from command value
+	 *
+	 * @param stringValueArray array
+	 * @param stringValue value
+	 * @return round value
+	 */
+	private String getPresetValueDropDown(String[] stringValueArray, String stringValue) {
+		int[] array = Arrays.stream(stringValueArray).mapToInt(Integer::parseInt).toArray();
+		int value = Integer.parseInt(stringValue);
+		for (int i = 0; i < array.length - 1; i++) {
+			if (value == array[i]) {
+				return String.valueOf(array[i]);
+			} else if (array[i] < value && array[i + 1] > value) {
+				if (Math.abs(array[i] - value) > Math.abs(array[i + 1] - value)) {
+					return String.valueOf(array[i + 1]);
+				}
+				return String.valueOf(array[i]);
+			}
+		}
+		throw new IllegalArgumentException(
+				String.format("Not found value %s", value));
+	}
+
+	/**
+	 * create string array from start value to end value and divide by 3
+	 *
+	 * @param start start value
+	 * @param end end value
+	 * @return string array
+	 */
+	private String[] createDropdownValue(int start, int end) {
+		return IntStream.rangeClosed(start, end).filter(n -> n % 3 == 0).mapToObj(Integer::toString)
+				.toArray(String[]::new);
+	}
+
+	/**
+	 * check value is null or empty
+	 *
+	 * @param value input value
+	 * @return value after checking
+	 */
+	private String checkValue(String value) {
+		if (StringUtils.isNullOrEmpty(value)) {
+			return SennheiserConstant.NONE;
+		}
+		return value;
 	}
 }

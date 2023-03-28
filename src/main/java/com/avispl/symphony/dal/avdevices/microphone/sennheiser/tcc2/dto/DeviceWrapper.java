@@ -189,7 +189,9 @@ public class DeviceWrapper {
 				return Optional.ofNullable(device.getLed().getCustomColor()).map(CustomColorDTO::getColor).orElse(SennheiserConstant.NONE);
 			case FAR_END_ACTIVITY_LED_MODE:
 				return Optional.ofNullable(device.getLed()).map(ledDTO -> String.valueOf(ledDTO.isActivity())).orElse(SennheiserConstant.NONE);
-			case INPUT_LEVEL_GAIN:
+			case INPUT_LEVEL_GAIN_STATUS:
+				return Optional.ofNullable(audio.getReference()).map(referenceDTO -> String.valueOf(referenceDTO.isGainStatus())).orElse(SennheiserConstant.NONE);
+			case INPUT_LEVEL_GAIN_PRESET:
 				return Optional.ofNullable(audio.getReference()).map(referenceDTO -> String.valueOf(referenceDTO.getGain())).orElse(SennheiserConstant.NONE);
 			case DANTE_IPV4_ADDRESS:
 				return convertListToString(audio.getOutput().getNetwork().getIpv4Address().getIpAddresses());

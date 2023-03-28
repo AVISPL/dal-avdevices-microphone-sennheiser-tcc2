@@ -5,6 +5,7 @@
 package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.reference;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * ReferenceDTO class includes the gain value
@@ -16,6 +17,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReferenceDTO {
 	private int gain;
+
+	@JsonProperty("farend_auto_adjust_enable")
+	private boolean gainStatus;
 
 	/**
 	 * Retrieves {@code {@link #gain}}
@@ -33,5 +37,23 @@ public class ReferenceDTO {
 	 */
 	public void setGain(int gain) {
 		this.gain = gain;
+	}
+
+	/**
+	 * Retrieves {@code {@link #gainStatus}}
+	 *
+	 * @return value of {@link #gainStatus}
+	 */
+	public boolean isGainStatus() {
+		return gainStatus;
+	}
+
+	/**
+	 * Sets {@code gainStatus}
+	 *
+	 * @param gainStatus the {@code boolean} field
+	 */
+	public void setGainStatus(boolean gainStatus) {
+		this.gainStatus = gainStatus;
 	}
 }

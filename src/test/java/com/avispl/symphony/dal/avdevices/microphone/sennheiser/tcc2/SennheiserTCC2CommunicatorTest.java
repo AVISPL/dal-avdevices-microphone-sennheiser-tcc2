@@ -48,6 +48,7 @@ public class SennheiserTCC2CommunicatorTest {
 	 */
 	@Test
 	void testSennheiserTCC2CommunicatorGetStatistic() throws Exception {
+		sennheiserTCC2Communicator.setConfigManagement("true");
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 		Map<String, String> statistics = extendedStatistic.getStatistics();
 		Assert.assertEquals(36, statistics.size());
@@ -170,8 +171,8 @@ public class SennheiserTCC2CommunicatorTest {
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 
 		ControllableProperty controllableProperty = new ControllableProperty();
-		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.INPUT_LEVEL_GAIN;
-		String value = "-60.0";
+		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.INPUT_LEVEL_GAIN_PRESET;
+		String value = "-60";
 		controllableProperty.setProperty(property);
 		controllableProperty.setValue(value);
 		sennheiserTCC2Communicator.controlProperty(controllableProperty);
@@ -191,7 +192,7 @@ public class SennheiserTCC2CommunicatorTest {
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 
 		ControllableProperty controllableProperty = new ControllableProperty();
-		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.INPUT_LEVEL_GAIN;
+		String property = SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.INPUT_LEVEL_GAIN_PRESET;
 		String value = "10.0";
 		controllableProperty.setProperty(property);
 		controllableProperty.setValue(value);
@@ -284,5 +285,23 @@ public class SennheiserTCC2CommunicatorTest {
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 		Map<String, String> statistics = extendedStatistic.getStatistics();
 		Assertions.assertEquals(value, statistics.get(property));
+	}
+
+	@Test
+	void test() throws Exception {
+		sennheiserTCC2Communicator.setConfigManagement("true");
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		Map<String, String> statistics = extendedStatistic.getStatistics();
+
+		ControllableProperty controllableProperty = new ControllableProperty();
+		String property = SennheiserConstant.DEVICE_SETTINGS + SennheiserConstant.HASH + SennheiserConstant.INPUT_LEVEL_GAIN_STATUS;
+		String value = "0";
+		controllableProperty.setProperty(property);
+		controllableProperty.setValue(value);
+		sennheiserTCC2Communicator.controlProperty(controllableProperty);
+
+		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
+		statistics = extendedStatistic.getStatistics();
+
 	}
 }

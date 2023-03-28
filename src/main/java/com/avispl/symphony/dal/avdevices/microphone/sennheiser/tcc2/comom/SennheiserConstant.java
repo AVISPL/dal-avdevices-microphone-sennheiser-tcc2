@@ -27,8 +27,8 @@ public class SennheiserConstant {
 	public static final String ROOM_IN_USE = "AudioRoomInUse";
 	public static final String BEAM_ELEVATION = "BeamElevation";
 	public static final String BEAM_AZIMUTH = "BeamAzimuth";
-	public static final String INPUT_PEAK_LEVEL = "InputPeakLevel";
-	public static final String DANTE_AEC_REFERENCE_RMS_LEVEL = "DanteAECReferenceRMSLevel";
+	public static final String INPUT_PEAK_LEVEL = "InputPeakLevel(dB)";
+	public static final String DANTE_AEC_REFERENCE_RMS_LEVEL = "DanteAECReferenceRMSLevel(dBfs)";
 	public static final String IPV4_ADDRESS = "IPv4Address";
 	public static final String IPV4_NETMASK = "IPv4Netmask";
 	public static final String IPV4_DEFAULT_GATEWAY = "IPv4DefaultGateway";
@@ -46,7 +46,8 @@ public class SennheiserConstant {
 	public static final String DEVICE_RESTART = "DeviceRestart";
 	public static final String AUDIO_MUTE = "AudioMute";
 	public static final String TRU_VOICE_LIFT = "TruVoiceLift";
-	public static final String INPUT_LEVEL_GAIN = "InputLevelGain";
+	public static final String INPUT_LEVEL_GAIN_PRESET = "InputLevelGainPreset(dB)";
+	public static final String INPUT_LEVEL_GAIN_STATUS = "InputLevelGainStatus";
 	public static final String MIC_ON_LED_COLOR = "LEDMicOnColor";
 	public static final String MIC_MUTE_LED_COLOR = "LEDMicMuteLColor";
 	public static final String LED_CUSTOM_COLOR = "LEDCustomColor";
@@ -82,8 +83,8 @@ public class SennheiserConstant {
 	public static final Float MAX_LEB_BRIGHTNESS_VALUE = 5f;
 	public static final String MIN_LEB_BRIGHTNESS_LABEL = "0";
 	public static final String MAX_LEB_BRIGHTNESS_LABEL = "5";
-	public static final Float MIN_INPUT_LEVEL_GAIN_VALUE = -60f;
-	public static final Float MAX_INPUT_LEVEL_GAIN_VALUE = 10f;
+	public static final int MIN_INPUT_LEVEL_GAIN_VALUE = -60;
+	public static final int MAX_INPUT_LEVEL_GAIN_VALUE = 10;
 	public static final String MIN_INPUT_LEVEL_GAIN_LABEL = "-60";
 	public static final String MAX_INPUT_LEVEL_GAIN_LABEL = "10";
 	public static final int GRACE_PERIOD = 0;

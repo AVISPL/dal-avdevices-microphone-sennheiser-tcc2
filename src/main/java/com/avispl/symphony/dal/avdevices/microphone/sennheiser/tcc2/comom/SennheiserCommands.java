@@ -46,6 +46,7 @@ public class SennheiserCommands {
 	public static final String DEVICE_RESTART_CONTROLLING = "{\"device\":{\"restart\":null}}\"";
 	public static final String AUDIO_MUTE_CONTROLLING = "{\"audio\":{\"mute\":null}}\"";
 	public static final String VOICE_LIFT_CONTROLLING = "{\"audio\":{\"voice_lift\":{\"active\":null}}}\"";
+	public static final String INPUT_LEVEL_GAIN_STATUS_CONTROLLING = "{\"audio\":{\"ref1\":{\"farend_auto_adjust_enable\":null}}}\"";
 	public static final String INPUT_LEVEL_GAIN_CONTROLLING = "{\"audio\":{\"ref1\":{\"gain\":null}}}\"";
 	public static final String MIC_ON_LED_COLOR_CONTROLLING = "{\"device\":{\"led\":{\"mic_on\":{\"color\":null}}}}\"";
 	public static final String MIC_MUTE_LED_COLOR_CONTROLLING = "{\"device\":{\"led\":{\"mic_mute\":{\"color\":null}}}}\"";
