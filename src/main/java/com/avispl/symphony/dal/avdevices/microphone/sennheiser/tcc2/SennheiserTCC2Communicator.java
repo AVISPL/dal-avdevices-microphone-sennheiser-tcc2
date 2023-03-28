@@ -538,16 +538,15 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 				case LED_BRIGHTNESS:
 					if (SennheiserConstant.NONE.equals(value) || StringUtils.isNullOrEmpty(value)) {
 						stats.put(deviceSettingsGroup + namePropertyCurrent, SennheiserConstant.NONE);
-						stats.put(SennheiserConstant.DEVICE_SETTINGS_LED_BRIGHTNESS_CURRENT_VALUE, SennheiserConstant.NONE);
-						break;
+					} else {
+						addAdvanceControlProperties(advancedControllableProperties, stats,
+								createSlider(stats, deviceSettingsGroup + namePropertyCurrent, SennheiserConstant.MIN_LEB_BRIGHTNESS_LABEL, SennheiserConstant.MAX_LEB_BRIGHTNESS_LABEL,
+										SennheiserConstant.MIN_LEB_BRIGHTNESS_VALUE, SennheiserConstant.MAX_LEB_BRIGHTNESS_VALUE, Float.parseFloat(value)), value);
+						if ((int) Float.parseFloat(value) == 0) {
+							value = SennheiserConstant.OFF;
+						}
+						stats.put(SennheiserConstant.DEVICE_SETTINGS_LED_BRIGHTNESS_CURRENT_VALUE, value);
 					}
-					addAdvanceControlProperties(advancedControllableProperties, stats,
-							createSlider(stats, deviceSettingsGroup + namePropertyCurrent, SennheiserConstant.MIN_LEB_BRIGHTNESS_LABEL, SennheiserConstant.MAX_LEB_BRIGHTNESS_LABEL,
-									SennheiserConstant.MIN_LEB_BRIGHTNESS_VALUE, SennheiserConstant.MAX_LEB_BRIGHTNESS_VALUE, Float.parseFloat(value)), value);
-					if ((int) Float.parseFloat(value) == 0) {
-						value = SennheiserConstant.OFF;
-					}
-					stats.put(SennheiserConstant.DEVICE_SETTINGS_LED_BRIGHTNESS_CURRENT_VALUE, value);
 					break;
 				case DEVICE_RESTART:
 					addAdvanceControlProperties(advancedControllableProperties, stats,
