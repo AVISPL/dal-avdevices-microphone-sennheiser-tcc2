@@ -810,17 +810,16 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	private String getPresetValueDropDown(String[] stringValueArray, String stringValue) {
 		int[] array = Arrays.stream(stringValueArray).mapToInt(Integer::parseInt).toArray();
 		int value = Integer.parseInt(stringValue);
-		for (int i = 0; i < array.length - 1; i++) {
-			if (value == array[i]) {
-				return String.valueOf(array[i]);
-			} else if (array[i] < value && array[i + 1] > value) {
-				if (Math.abs(array[i] - value) > Math.abs(array[i + 1] - value)) {
-					return String.valueOf(array[i + 1]);
-				}
-				return String.valueOf(array[i]);
+		int closest = array[0];
+		int distance = Math.abs(value - array[0]);
+		for (int i = 1; i < array.length; i++) {
+			int currentDistance = Math.abs(value - array[i]);
+			if (currentDistance < distance) {
+				closest = array[i];
+				distance = currentDistance;
 			}
 		}
-		return SennheiserConstant.NONE;
+		return String.valueOf(closest);
 	}
 
 	/**
