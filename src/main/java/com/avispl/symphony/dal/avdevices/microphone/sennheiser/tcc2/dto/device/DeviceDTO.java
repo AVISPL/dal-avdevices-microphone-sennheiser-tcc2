@@ -21,7 +21,7 @@ import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.n
 public class DeviceDTO {
 	private IdentityDTO identity;
 	private NetworkDTO network;
-	private long time;
+	private Long time;
 	private String date;
 	private String system;
 	private String position;
@@ -30,7 +30,7 @@ public class DeviceDTO {
 	private String language;
 	private IdentificationDTO identification;
 	private LedDTO led;
-	private boolean restart;
+	private Boolean restart;
 
 	/**
 	 * Retrieves {@link #identity}
@@ -55,7 +55,7 @@ public class DeviceDTO {
 	 *
 	 * @return value of {@link #time}
 	 */
-	public long getTime() {
+	public Long getTime() {
 		return time;
 	}
 
@@ -235,7 +235,7 @@ public class DeviceDTO {
 	 *
 	 * @return value of {@link #restart}
 	 */
-	public boolean isRestart() {
+	public Boolean isRestart() {
 		return restart;
 	}
 
@@ -244,7 +244,7 @@ public class DeviceDTO {
 	 *
 	 * @param restart the {@code boolean} field
 	 */
-	public void setRestart(boolean restart) {
+	public void setRestart(Boolean restart) {
 		this.restart = restart;
 	}
 }

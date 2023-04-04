@@ -14,14 +14,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReferenceDTO {
-	private int rms;
+	private Integer rms;
 
 	/**
 	 * Retrieves {@code {@link #rms}}
 	 *
 	 * @return value of {@link #rms}
 	 */
-	public int getRms() {
+	public Integer getRms() {
 		return rms;
 	}
 
@@ -30,7 +30,7 @@ public class ReferenceDTO {
 	 *
 	 * @param rms the {@code int} field
 	 */
-	public void setRms(int rms) {
+	public void setRms(Integer rms) {
 		this.rms = rms;
 	}
 }

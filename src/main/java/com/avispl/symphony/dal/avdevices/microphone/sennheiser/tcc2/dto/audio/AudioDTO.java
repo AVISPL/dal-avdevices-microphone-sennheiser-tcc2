@@ -20,11 +20,11 @@ import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.vo
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AudioDTO {
 	@JsonProperty("room_in_use")
-	private boolean roomInUse;
+	private Boolean roomInUse;
 
 	@JsonProperty("out2")
 	private OutputDTO output;
-	private boolean mute;
+	private Boolean mute;
 
 	@JsonProperty("voice_lift")
 	private VoiceLiftDTO voiceLift;
@@ -73,7 +73,7 @@ public class AudioDTO {
 	 *
 	 * @return value of {@link #mute}
 	 */
-	public boolean isMute() {
+	public Boolean isMute() {
 		return mute;
 	}
 
@@ -82,7 +82,7 @@ public class AudioDTO {
 	 *
 	 * @param mute the {@code boolean} field
 	 */
-	public void setMute(boolean mute) {
+	public void setMute(Boolean mute) {
 		this.mute = mute;
 	}
 
@@ -91,7 +91,7 @@ public class AudioDTO {
 	 *
 	 * @return value of {@link #roomInUse}
 	 */
-	public boolean isRoomInUse() {
+	public Boolean isRoomInUse() {
 		return roomInUse;
 	}
 
@@ -100,7 +100,7 @@ public class AudioDTO {
 	 *
 	 * @param roomInUse the {@code boolean} field
 	 */
-	public void setRoomInUse(boolean roomInUse) {
+	public void setRoomInUse(Boolean roomInUse) {
 		this.roomInUse = roomInUse;
 	}
 

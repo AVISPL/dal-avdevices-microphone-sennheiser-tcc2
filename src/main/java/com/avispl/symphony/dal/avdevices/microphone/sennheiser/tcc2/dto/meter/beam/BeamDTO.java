@@ -14,15 +14,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BeamDTO {
-	private int elevation;
-	private int azimuth;
+	private Integer elevation;
+	private Integer azimuth;
 
 	/**
 	 * Retrieves {@code {@link #elevation}}
 	 *
 	 * @return value of {@link #elevation}
 	 */
-	public int getElevation() {
+	public Integer getElevation() {
 		return elevation;
 	}
 
@@ -31,7 +31,7 @@ public class BeamDTO {
 	 *
 	 * @param elevation the {@code int} field
 	 */
-	public void setElevation(int elevation) {
+	public void setElevation(Integer elevation) {
 		this.elevation = elevation;
 	}
 
@@ -40,7 +40,7 @@ public class BeamDTO {
 	 *
 	 * @return value of {@link #azimuth}
 	 */
-	public int getAzimuth() {
+	public Integer getAzimuth() {
 		return azimuth;
 	}
 
@@ -49,7 +49,7 @@ public class BeamDTO {
 	 *
 	 * @param azimuth the {@code int} field
 	 */
-	public void setAzimuth(int azimuth) {
+	public void setAzimuth(Integer azimuth) {
 		this.azimuth = azimuth;
 	}
 }

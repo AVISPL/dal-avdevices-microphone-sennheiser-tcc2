@@ -471,6 +471,10 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 				if (!devicesExecutionPool.get(lastIndex).isDone()) {
 					failedMonitor.add(commandIndex.getName());
 					destroyChannel();
+					if (localCacheMapOfPropertyNameAndValue.containsKey(commandIndex.getName())) {
+						localCacheMapOfPropertyNameAndValue.remove(commandIndex.getName());
+					}
+					localCacheMapOfPropertyNameAndValue.put(commandIndex.getName(), SennheiserConstant.NONE);
 					devicesExecutionPool.get(lastIndex).cancel(true);
 				}
 			});
@@ -560,12 +564,14 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 							createSwitch(audioSettingsGroup + namePropertyCurrent, SennheiserConstant.TRUE.equals(value) ? 0 : 1, SennheiserConstant.AUTO, SennheiserConstant.MANUAL), value);
 					break;
 				case INPUT_LEVEL_GAIN_PRESET:
-					if (SennheiserConstant.FALSE.equals(localCacheMapOfPropertyNameAndValue.get(SennheiserConstant.INPUT_LEVEL_GAIN_STATUS))) {
-						String[] numbers = createDropdownValue(SennheiserConstant.MIN_INPUT_LEVEL_GAIN_VALUE, SennheiserConstant.MAX_INPUT_LEVEL_GAIN_VALUE);
-						String presetValue = getPresetValueDropDown(numbers, value);
-						addAdvanceControlProperties(advancedControllableProperties, stats, createDropdown(audioSettingsGroup + namePropertyCurrent, numbers, presetValue), value);
+					if (!SennheiserConstant.NONE.equals(localCacheMapOfPropertyNameAndValue.get(SennheiserPropertiesList.INPUT_LEVEL_GAIN_STATUS.getName()))) {
+						if (SennheiserConstant.FALSE.equals(localCacheMapOfPropertyNameAndValue.get(SennheiserConstant.INPUT_LEVEL_GAIN_STATUS))) {
+							String[] numbers = createDropdownValue(SennheiserConstant.MIN_INPUT_LEVEL_GAIN_VALUE, SennheiserConstant.MAX_INPUT_LEVEL_GAIN_VALUE);
+							String presetValue = getPresetValueDropDown(numbers, value);
+							addAdvanceControlProperties(advancedControllableProperties, stats, createDropdown(audioSettingsGroup + namePropertyCurrent, numbers, presetValue), value);
+						}
+						stats.put(SennheiserConstant.AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE, getDefaultValueForNullData(value));
 					}
-					stats.put(SennheiserConstant.AUDIO_SETTINGS_INPUT_LEVEL_GAIN_CURRENT_VALUE, getDefaultValueForNullData(value));
 					break;
 				case MIC_ON_LED_COLOR:
 				case MIC_MUTE_LED_COLOR:
@@ -594,7 +600,10 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 					stats.put(networkGroup + namePropertyCurrent, value);
 					break;
 				case IP_MODE:
-					stats.put(networkGroup + namePropertyCurrent, SennheiserConstant.TRUE.equals(value) ? SennheiserConstant.AUTO : SennheiserConstant.MANUAL);
+					if (!SennheiserConstant.NONE.equals(value)) {
+						value = SennheiserConstant.TRUE.equals(value) ? SennheiserConstant.AUTO : SennheiserConstant.MANUAL;
+					}
+					stats.put(networkGroup + namePropertyCurrent, value);
 					break;
 				case DANTE_MAC_ADDRESS:
 				case DANTE_IPV4_DEFAULT_GATEWAY:
@@ -772,8 +781,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 			byte[] response = send(command.getBytes(StandardCharsets.UTF_8));
 			DeviceWrapper deviceWrapper = objectMapper.readValue(response, DeviceWrapper.class);
 			if (deviceWrapper.getOsc() != null && deviceWrapper.getOsc().getError() != null) {
-				throw new IllegalArgumentException(
-						String.format("The device has responded with an error: %s", deviceWrapper.getOsc().getError()));
+				throw new IllegalArgumentException(String.format("The device has responded with an error: %s", deviceWrapper.getOsc().getError()));
 			}
 		} catch (Exception e) {
 			throw new IllegalArgumentException(String.format("Can't control property %s with value %s.", propertyItem.name(), value), e);
@@ -808,6 +816,9 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	 * @return round value
 	 */
 	private String getPresetValueDropDown(String[] stringValueArray, String stringValue) {
+		if (SennheiserConstant.NONE.equals(stringValue)) {
+			return SennheiserConstant.MIN_INPUT_LEVEL_GAIN_LABEL;
+		}
 		int[] array = Arrays.stream(stringValueArray).mapToInt(Integer::parseInt).toArray();
 		int value = Integer.parseInt(stringValue);
 		int closest = array[0];
@@ -830,8 +841,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	 * @return string array
 	 */
 	private String[] createDropdownValue(int start, int end) {
-		return IntStream.rangeClosed(start, end).filter(n -> n % 3 == 0).mapToObj(Integer::toString)
-				.toArray(String[]::new);
+		return IntStream.rangeClosed(start, end).filter(n -> n % 3 == 0).mapToObj(Integer::toString).toArray(String[]::new);
 	}
 
 	/**

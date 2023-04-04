@@ -15,14 +15,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IdentificationDTO {
-	private boolean visual;
+	private Boolean visual;
 
 	/**
 	 * Retrieves {@code {@link #visual}}
 	 *
 	 * @return value of {@link #visual}
 	 */
-	public boolean isVisual() {
+	public Boolean isVisual() {
 		return visual;
 	}
 
@@ -31,7 +31,7 @@ public class IdentificationDTO {
 	 *
 	 * @param visual the {@code boolean} field
 	 */
-	public void setVisual(boolean visual) {
+	public void setVisual(Boolean visual) {
 		this.visual = visual;
 	}
 }

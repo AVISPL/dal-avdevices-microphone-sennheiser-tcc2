@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LedDTO {
-	private int brightness;
+	private Integer brightness;
 
 	@JsonProperty("mic_on")
 	private MicOnColorDTO micOnColor;
@@ -28,14 +28,14 @@ public class LedDTO {
 	private CustomColorDTO customColor;
 
 	@JsonProperty("show_farend_activity")
-	private boolean activity;
+	private Boolean activity;
 
 	/**
 	 * Retrieves {@code {@link #activity}}
 	 *
 	 * @return value of {@link #activity}
 	 */
-	public boolean isActivity() {
+	public Boolean isActivity() {
 		return activity;
 	}
 
@@ -44,7 +44,7 @@ public class LedDTO {
 	 *
 	 * @param activity the {@code boolean} field
 	 */
-	public void setActivity(boolean activity) {
+	public void setActivity(Boolean activity) {
 		this.activity = activity;
 	}
 
@@ -107,7 +107,7 @@ public class LedDTO {
 	 *
 	 * @return value of {@link #brightness}
 	 */
-	public int getBrightness() {
+	public Integer getBrightness() {
 		return brightness;
 	}
 
@@ -116,7 +116,7 @@ public class LedDTO {
 	 *
 	 * @param brightness the {@code int} field
 	 */
-	public void setBrightness(int brightness) {
+	public void setBrightness(Integer brightness) {
 		this.brightness = brightness;
 	}
 }

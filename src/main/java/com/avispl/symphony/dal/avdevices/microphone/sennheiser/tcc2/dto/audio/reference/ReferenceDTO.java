@@ -16,17 +16,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReferenceDTO {
-	private int gain;
+	private Integer gain;
 
 	@JsonProperty("farend_auto_adjust_enable")
-	private boolean gainStatus;
+	private Boolean gainStatus;
 
 	/**
 	 * Retrieves {@code {@link #gain}}
 	 *
 	 * @return value of {@link #gain}
 	 */
-	public int getGain() {
+	public Integer getGain() {
 		return gain;
 	}
 
@@ -35,7 +35,7 @@ public class ReferenceDTO {
 	 *
 	 * @param gain the {@code int} field
 	 */
-	public void setGain(int gain) {
+	public void setGain(Integer gain) {
 		this.gain = gain;
 	}
 
@@ -44,7 +44,7 @@ public class ReferenceDTO {
 	 *
 	 * @return value of {@link #gainStatus}
 	 */
-	public boolean isGainStatus() {
+	public Boolean isGainStatus() {
 		return gainStatus;
 	}
 
@@ -53,7 +53,7 @@ public class ReferenceDTO {
 	 *
 	 * @param gainStatus the {@code boolean} field
 	 */
-	public void setGainStatus(boolean gainStatus) {
+	public void setGainStatus(Boolean gainStatus) {
 		this.gainStatus = gainStatus;
 	}
 }

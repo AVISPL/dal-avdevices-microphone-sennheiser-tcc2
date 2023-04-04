@@ -3,6 +3,8 @@
  */
 package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -32,7 +34,7 @@ public class SennheiserTCC2CommunicatorTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		sennheiserTCC2Communicator = new SennheiserTCC2Communicator();
-		sennheiserTCC2Communicator.setHost("10.34.41.131");
+		sennheiserTCC2Communicator.setHost("127.0.0.1");
 		sennheiserTCC2Communicator.init();
 		sennheiserTCC2Communicator.connect();
 	}
@@ -58,11 +60,11 @@ public class SennheiserTCC2CommunicatorTest {
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.HARDWARE_REVISION.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.FIRMWARE_VERSION.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.OSC_VERSION.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK+SennheiserConstant.HASH+SennheiserPropertiesList.MAC_ADDRESS.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK+SennheiserConstant.HASH+SennheiserPropertiesList.IPV4_ADDRESS.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK+SennheiserConstant.HASH+SennheiserPropertiesList.IPV4_INTERFACE_NAME.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK+SennheiserConstant.HASH+SennheiserPropertiesList.IPV4_NETMASK.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK+SennheiserConstant.HASH+SennheiserPropertiesList.IPV4_DEFAULT_GATEWAY.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK + SennheiserConstant.HASH + SennheiserPropertiesList.MAC_ADDRESS.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK + SennheiserConstant.HASH + SennheiserPropertiesList.IPV4_ADDRESS.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK + SennheiserConstant.HASH + SennheiserPropertiesList.IPV4_INTERFACE_NAME.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK + SennheiserConstant.HASH + SennheiserPropertiesList.IPV4_NETMASK.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK + SennheiserConstant.HASH + SennheiserPropertiesList.IPV4_DEFAULT_GATEWAY.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_DATE.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_TIME.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_INFORMATION.getName()));
@@ -71,10 +73,10 @@ public class SennheiserTCC2CommunicatorTest {
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_LOCATION.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_LANGUAGE.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.ROOM_IN_USE.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserConstant.AUDIO_SETTINGS+SennheiserConstant.HASH+SennheiserPropertiesList.BEAM_AZIMUTH.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserConstant.AUDIO_SETTINGS+SennheiserConstant.HASH+SennheiserPropertiesList.BEAM_ELEVATION.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserConstant.AUDIO_SETTINGS+SennheiserConstant.HASH+SennheiserPropertiesList.INPUT_PEAK_LEVEL.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserConstant.AUDIO_SETTINGS+SennheiserConstant.HASH+SennheiserPropertiesList.DANTE_AEC_REFERENCE_RMS_LEVEL.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserPropertiesList.BEAM_AZIMUTH.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserPropertiesList.BEAM_ELEVATION.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserPropertiesList.INPUT_PEAK_LEVEL.getName()));
+		Assert.assertNotNull(statistics.get(SennheiserConstant.AUDIO_SETTINGS + SennheiserConstant.HASH + SennheiserPropertiesList.DANTE_AEC_REFERENCE_RMS_LEVEL.getName()));
 	}
 
 	/**

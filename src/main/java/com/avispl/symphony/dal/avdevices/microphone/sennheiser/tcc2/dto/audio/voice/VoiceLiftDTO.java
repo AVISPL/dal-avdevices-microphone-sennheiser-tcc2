@@ -16,14 +16,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VoiceLiftDTO {
-	private boolean active;
+	private Boolean active;
 
 	/**
 	 * Retrieves {@code {@link #active}}
 	 *
 	 * @return value of {@link #active}
 	 */
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
 
@@ -32,7 +32,7 @@ public class VoiceLiftDTO {
 	 *
 	 * @param active the {@code boolean} field
 	 */
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 }

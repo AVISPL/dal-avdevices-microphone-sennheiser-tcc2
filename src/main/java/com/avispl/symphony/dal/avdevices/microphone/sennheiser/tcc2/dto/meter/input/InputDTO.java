@@ -14,14 +14,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InputDTO {
-	private int peak;
+	private Integer peak;
 
 	/**
 	 * Retrieves {@code {@link #peak}}
 	 *
 	 * @return value of {@link #peak}
 	 */
-	public int getPeak() {
+	public Integer getPeak() {
 		return peak;
 	}
 
@@ -30,7 +30,7 @@ public class InputDTO {
 	 *
 	 * @param peak the {@code int} field
 	 */
-	public void setPeak(int peak) {
+	public void setPeak(Integer peak) {
 		this.peak = peak;
 	}
 }
