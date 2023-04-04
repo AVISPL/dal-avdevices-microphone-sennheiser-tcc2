@@ -166,7 +166,7 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
       <scope>provided</scope>
-      <version>5.2.22.RELEASE</version>
+      <version>6.0.0</version>
     </dependency>
     <!--scope test-->
     <dependency>
