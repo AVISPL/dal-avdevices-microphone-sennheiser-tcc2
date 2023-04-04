@@ -236,7 +236,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	 */
 	public SennheiserTCC2Communicator() {
 		super();
-		this.setPort(45);
+		this.setPort(this.getPort());
 
 		// set list of command success strings (included at the end of response when command succeeds, typically ending with command prompt)
 		this.setCommandSuccessList(Collections.singletonList("\r\n"));
@@ -358,6 +358,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 			try {
 				controlProperty(p);
 			} catch (Exception e) {
+				logger.error(String.format("Error when control property %s", p.getProperty()), e);
 				e.printStackTrace();
 			}
 		}
@@ -483,10 +484,9 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 					Thread.sleep(100);
 				}
 				manageTimeOutWorkerThread.get();
-			} catch (ExecutionException e) {
+			} catch (Exception e) {
+				logger.error(String.format("There was an error encountered while attempting to retrieve the name of the command: %s", commandIndex.getName()), e);
 				e.printStackTrace();
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
 			}
 		}
 		devicesExecutionPool.removeIf(Future::isDone);
