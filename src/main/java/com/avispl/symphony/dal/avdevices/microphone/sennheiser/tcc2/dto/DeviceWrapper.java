@@ -3,14 +3,7 @@
  */
 package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -137,8 +130,6 @@ public class DeviceWrapper {
 				return Optional.ofNullable(osc).map(OscDTO::getVersion).orElse(SennheiserConstant.NONE);
 			case DEVICE_DATE:
 				return Optional.ofNullable(device).map(DeviceDTO::getDate).orElse(SennheiserConstant.NONE);
-			case DEVICE_TIME:
-				return convertNumberOfSecondsToTimeStamp(Optional.ofNullable(device.getTime()).map(Object::toString).orElse(SennheiserConstant.NONE));
 			case DEVICE_INFORMATION:
 				return Optional.ofNullable(device).map(DeviceDTO::getSystem).orElse(SennheiserConstant.NONE);
 			case DEVICE_POSITION:
@@ -207,23 +198,6 @@ public class DeviceWrapper {
 				return convertListToString(audio.getOutput().getNetwork().getIpv4Address().getIpModes());
 		}
 		return null;
-	}
-
-	/**
-	 * convert number of seconds from 1/1/2000 to now
-	 *
-	 * @param numberOfSeconds number of seconds from 1/1/2000
-	 * @return Date Time Format - EEE MMM dd HH:mm:ss z yyyy
-	 */
-	private String convertNumberOfSecondsToTimeStamp(String numberOfSeconds) {
-		if (SennheiserConstant.NONE.equals(numberOfSeconds)) {
-			return SennheiserConstant.NONE;
-		}
-		LocalDateTime startDate = LocalDateTime.of(2000, Month.JANUARY, 1, 0, 0, 0);
-		Duration duration = Duration.ofSeconds(Long.parseLong(numberOfSeconds));
-		LocalDateTime resultDate = startDate.plus(duration);
-		ZonedDateTime zonedDateTime = resultDate.atZone(ZoneId.systemDefault());
-		return DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy", Locale.US).format(zonedDateTime);
 	}
 
 	/**

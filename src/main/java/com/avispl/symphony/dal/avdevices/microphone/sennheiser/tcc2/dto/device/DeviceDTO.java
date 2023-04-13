@@ -21,7 +21,6 @@ import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.n
 public class DeviceDTO {
 	private IdentityDTO identity;
 	private NetworkDTO network;
-	private Long time;
 	private String date;
 	private String system;
 	private String position;
@@ -48,24 +47,6 @@ public class DeviceDTO {
 	 */
 	public void setIdentity(IdentityDTO identity) {
 		this.identity = identity;
-	}
-
-	/**
-	 * Retrieves {@code {@link #time}}
-	 *
-	 * @return value of {@link #time}
-	 */
-	public Long getTime() {
-		return time;
-	}
-
-	/**
-	 * Sets {@code time}
-	 *
-	 * @param time the {@code long} field
-	 */
-	public void setTime(long time) {
-		this.time = time;
 	}
 
 	/**

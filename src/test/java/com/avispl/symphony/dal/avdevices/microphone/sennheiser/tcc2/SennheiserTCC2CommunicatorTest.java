@@ -54,7 +54,7 @@ public class SennheiserTCC2CommunicatorTest {
 		sennheiserTCC2Communicator.setConfigManagement("false");
 		extendedStatistic = (ExtendedStatistics) sennheiserTCC2Communicator.getMultipleStatistics().get(0);
 		Map<String, String> statistics = extendedStatistic.getStatistics();
-		Assert.assertEquals(36, statistics.size());
+		Assert.assertEquals(35, statistics.size());
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.MANUFACTURER.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.PRODUCT_NAME.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.SERIAL_NUMBER.getName()));
@@ -67,7 +67,6 @@ public class SennheiserTCC2CommunicatorTest {
 		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK + SennheiserConstant.HASH + SennheiserPropertiesList.IPV4_NETMASK.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserConstant.NETWORK + SennheiserConstant.HASH + SennheiserPropertiesList.IPV4_DEFAULT_GATEWAY.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_DATE.getName()));
-		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_TIME.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_INFORMATION.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_POSITION.getName()));
 		Assert.assertNotNull(statistics.get(SennheiserPropertiesList.DEVICE_NAME.getName()));

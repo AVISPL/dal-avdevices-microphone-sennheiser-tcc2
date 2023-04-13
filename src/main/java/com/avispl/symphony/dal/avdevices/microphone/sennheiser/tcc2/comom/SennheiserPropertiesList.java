@@ -20,7 +20,6 @@ public enum SennheiserPropertiesList {
 	HARDWARE_REVISION(SennheiserConstant.HARDWARE_REVISION, SennheiserCommands.HARDWARE_REVISION, false),
 	FIRMWARE_VERSION(SennheiserConstant.FIRMWARE_VERSION, SennheiserCommands.FIRMWARE_VERSION, false),
 	OSC_VERSION(SennheiserConstant.OSC_VERSION, SennheiserCommands.OSC_VERSION, false),
-	DEVICE_TIME(SennheiserConstant.DEVICE_TIME, SennheiserCommands.DEVICE_TIME, false),
 	DEVICE_DATE(SennheiserConstant.DEVICE_DATE, SennheiserCommands.DEVICE_DATE, false),
 	DEVICE_INFORMATION(SennheiserConstant.DEVICE_INFORMATION, SennheiserCommands.DEVICE_INFORMATION, false),
 	DEVICE_POSITION(SennheiserConstant.DEVICE_POSITION, SennheiserCommands.DEVICE_POSITION, false),
