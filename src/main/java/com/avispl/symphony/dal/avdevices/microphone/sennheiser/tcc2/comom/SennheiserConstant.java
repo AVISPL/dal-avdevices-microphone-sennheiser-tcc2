@@ -18,7 +18,6 @@ public class SennheiserConstant {
 	public static final String FIRMWARE_VERSION = "FirmwareVersion";
 	public static final String OSC_VERSION = "OSCVersion";
 	public static final String DEVICE_DATE = "DeviceDate";
-	public static final String DEVICE_TIME = "DeviceTime";
 	public static final String DEVICE_INFORMATION = "DeviceInformation";
 	public static final String DEVICE_POSITION = "DevicePosition";
 	public static final String DEVICE_NAME = "DeviceName";

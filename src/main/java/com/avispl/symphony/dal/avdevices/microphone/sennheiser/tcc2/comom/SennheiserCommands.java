@@ -17,7 +17,6 @@ public class SennheiserCommands {
 	public static final String HARDWARE_REVISION = "{\"device\":{\"identity\":{\"hw_revision\":null}}}\"";
 	public static final String FIRMWARE_VERSION = "{\"device\":{\"identity\":{\"version\":null}}}\"";
 	public static final String OSC_VERSION = "{\"osc\":{\"version\":null}}\"";
-	public static final String DEVICE_TIME = "{\"device\":{\"time\":null}}\"";
 	public static final String DEVICE_DATE = "{\"device\":{\"date\":null}}\"";
 	public static final String DEVICE_INFORMATION = "{\"device\":{\"system\":null}}\"";
 	public static final String DEVICE_POSITION = "{\"device\":{\"position\":null}}\"";
