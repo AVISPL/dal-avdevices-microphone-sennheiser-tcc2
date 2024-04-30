@@ -1,5 +1,5 @@
 /*
- *  * Copyright (c) 2023 AVI-SPL, Inc. All Rights Reserved.
+ *  * Copyright (c) 2023-2024 AVI-SPL, Inc. All Rights Reserved.
  */
 package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2;
 
@@ -24,6 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.common.PingMode;
 import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,9 +36,9 @@ import com.avispl.symphony.api.dal.dto.monitor.ExtendedStatistics;
 import com.avispl.symphony.api.dal.dto.monitor.Statistics;
 import com.avispl.symphony.api.dal.error.ResourceNotReachableException;
 import com.avispl.symphony.api.dal.monitor.Monitorable;
-import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserConstant;
-import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserLEDColorMetric;
-import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserPropertiesList;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.common.SennheiserConstant;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.common.SennheiserLEDColorMetric;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.common.SennheiserPropertiesList;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.DeviceWrapper;
 import com.avispl.symphony.dal.communicator.SocketCommunicator;
 import com.avispl.symphony.dal.util.StringUtils;
@@ -116,6 +117,11 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	private ExecutorService timeoutManagementExSer;
 	private long lastCommandTimestamp;
 	private int countMonitoringAndControllingCommand = 0;
+	/**
+	 * Ping mode to switch between TCP and ICMP
+	 * @since 1.0.1
+	 * */
+	private PingMode pingMode = PingMode.ICMP;
 
 	/**
 	 * Pool for keeping all the async operations in, to track any operations in progress and cancel them if needed
@@ -160,6 +166,14 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 		this.configManagement = configManagement;
 	}
 
+	public String getPingMode() {
+		return pingMode.name();
+	}
+
+	public void setPingMode(String pingMode) {
+		this.pingMode = PingMode.ofString(pingMode);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 * <p>
@@ -169,42 +183,48 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 	 */
 	@Override
 	public int ping() throws Exception {
-		if (isInitialized()) {
-			long pingResultTotal = 0L;
+		if (this.pingMode == PingMode.ICMP) {
+			return super.ping();
+		} else if (this.pingMode == PingMode.TCP) {
+            if (isInitialized()) {
+                long pingResultTotal = 0L;
 
-			for (int i = 0; i < this.getPingAttempts(); i++) {
-				long startTime = System.currentTimeMillis();
+                for (int i = 0; i < this.getPingAttempts(); i++) {
+                    long startTime = System.currentTimeMillis();
 
-				try (Socket puSocketConnection = new Socket(this.host, this.getPort())) {
-					puSocketConnection.setSoTimeout(this.getPingTimeout());
-					if (puSocketConnection.isConnected()) {
-						long pingResult = System.currentTimeMillis() - startTime;
-						pingResultTotal += pingResult;
-						if (this.logger.isTraceEnabled()) {
-							this.logger.trace(String.format("PING OK: Attempt #%s to connect to %s on port %s succeeded in %s ms", i + 1, host, this.getPort(), pingResult));
-						}
-					} else {
-						if (this.logger.isDebugEnabled()) {
-							this.logger.debug(String.format("PING DISCONNECTED: Connection to %s did not succeed within the timeout period of %sms", host, this.getPingTimeout()));
-						}
-						return this.getPingTimeout();
-					}
-				} catch (SocketTimeoutException | ConnectException tex) {
-					if (this.logger.isDebugEnabled()) {
-						this.logger.error(String.format("PING TIMEOUT: Connection to %s did not succeed within the timeout period of %sms", host, this.getPingTimeout()));
-					}
-					throw new SocketTimeoutException("Connection timed out");
-				} catch (Exception e) {
-					if (this.logger.isDebugEnabled()) {
-						this.logger.error(String.format("PING TIMEOUT: Connection to %s did not succeed, UNKNOWN ERROR %s: ", host, e.getMessage()));
-					}
-					return this.getPingTimeout();
-				}
-			}
-			return Math.max(1, Math.toIntExact(pingResultTotal / this.getPingAttempts()));
+                    try (Socket puSocketConnection = new Socket(this.host, this.getPort())) {
+                        puSocketConnection.setSoTimeout(this.getPingTimeout());
+                        if (puSocketConnection.isConnected()) {
+                            long pingResult = System.currentTimeMillis() - startTime;
+                            pingResultTotal += pingResult;
+                            if (this.logger.isTraceEnabled()) {
+                                this.logger.trace(String.format("PING OK: Attempt #%s to connect to %s on port %s succeeded in %s ms", i + 1, host, this.getPort(), pingResult));
+                            }
+                        } else {
+                            if (this.logger.isDebugEnabled()) {
+                                this.logger.debug(String.format("PING DISCONNECTED: Connection to %s did not succeed within the timeout period of %sms", host, this.getPingTimeout()));
+                            }
+                            return this.getPingTimeout();
+                        }
+                    } catch (SocketTimeoutException | ConnectException tex) {
+                        if (this.logger.isDebugEnabled()) {
+                            this.logger.error(String.format("PING TIMEOUT: Connection to %s did not succeed within the timeout period of %sms", host, this.getPingTimeout()));
+                        }
+                        throw new SocketTimeoutException("Connection timed out");
+                    } catch (Exception e) {
+                        if (this.logger.isDebugEnabled()) {
+                            this.logger.error(String.format("PING TIMEOUT: Connection to %s did not succeed, UNKNOWN ERROR %s: ", host, e.getMessage()));
+                        }
+                        return this.getPingTimeout();
+                    }
+                }
+                return Math.max(1, Math.toIntExact(pingResultTotal / this.getPingAttempts()));
+            } else {
+                throw new IllegalStateException("Cannot use device class without calling init() first");
+            }
 		} else {
-			throw new IllegalStateException("Cannot use device class without calling init() first");
-		}
+            throw new IllegalArgumentException("Unknown PING Mode: " + pingMode);
+        }
 	}
 
 	/**
