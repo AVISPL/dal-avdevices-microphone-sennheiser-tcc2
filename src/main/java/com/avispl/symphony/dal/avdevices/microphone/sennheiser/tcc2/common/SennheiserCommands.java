@@ -1,7 +1,7 @@
 /*
- *  * Copyright (c) 2023 AVI-SPL, Inc. All Rights Reserved.
+ *  * Copyright (c) 2023-2024 AVI-SPL, Inc. All Rights Reserved.
  */
-package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom;
+package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.common;
 
 /**
  * SennheiserCommands class provides the commands list during the monitoring and controlling process
