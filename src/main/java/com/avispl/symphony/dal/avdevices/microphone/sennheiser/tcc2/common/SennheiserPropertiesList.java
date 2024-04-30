@@ -106,7 +106,7 @@ public enum SennheiserPropertiesList {
 	 * @return DevicesMetricGroup is the device metric group that want to get
 	 */
 	public static SennheiserPropertiesList getByName(String name) {
-		return Arrays.stream(SennheiserPropertiesList.values()).filter(group -> group.getName().equals(name)).findFirst()
+		return Arrays.stream(values()).filter(group -> group.getName().equals(name)).findFirst()
 				.orElseThrow(() -> new IllegalStateException(String.format("control group %s is not supported.", name)));
 	}
 }

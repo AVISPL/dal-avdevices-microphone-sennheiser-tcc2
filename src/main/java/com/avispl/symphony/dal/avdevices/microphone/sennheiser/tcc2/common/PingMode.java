@@ -36,9 +36,9 @@ public enum PingMode {
         if (logger.isDebugEnabled()) {
             logger.debug("Requested PING mode: " + mode);
         }
-        return Arrays.stream(PingMode.values())
+        return Arrays.stream(values())
                 .filter(pingMode -> Objects.equals(mode, pingMode.mode))
                 .findFirst()
-                .orElse(PingMode.ICMP);
+                .orElse(ICMP);
     }
 }

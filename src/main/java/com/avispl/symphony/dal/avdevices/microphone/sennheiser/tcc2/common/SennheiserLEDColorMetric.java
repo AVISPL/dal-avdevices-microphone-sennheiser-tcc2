@@ -51,7 +51,7 @@ public enum SennheiserLEDColorMetric {
 	 * @return uppercase value
 	 */
 	public static String getNameByValue(String value) {
-		Optional<SennheiserLEDColorMetric> sennheiserLEDColorMetric = Arrays.stream(SennheiserLEDColorMetric.values()).filter(item -> item.getName().equalsIgnoreCase(value)).findFirst();
+		Optional<SennheiserLEDColorMetric> sennheiserLEDColorMetric = Arrays.stream(values()).filter(item -> item.getName().equalsIgnoreCase(value)).findFirst();
 		return sennheiserLEDColorMetric.isPresent() ? sennheiserLEDColorMetric.get().getName() : SennheiserConstant.NONE;
 	}
 }
