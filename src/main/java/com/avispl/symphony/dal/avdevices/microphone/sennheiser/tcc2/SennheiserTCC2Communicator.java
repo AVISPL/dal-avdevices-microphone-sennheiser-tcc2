@@ -450,7 +450,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 		try {
 			byte[] response = send(command.getCommand().getBytes(StandardCharsets.UTF_8));
 			if (response == null || response.length == 0) {
-				updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, command.getName(), SennheiserConstant.NONE);
+				//updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, command.getName(), SennheiserConstant.NONE);
 				return;
 			}
 			DeviceWrapper deviceWrapper = objectMapper.readValue(response, DeviceWrapper.class);
@@ -460,7 +460,7 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 			}
 		} catch (Exception e) {
 			logger.error(String.format("Error when retrieving property name: %s", command.getName()), e);
-			updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, command.getName(), SennheiserConstant.NONE);
+			//updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, command.getName(), SennheiserConstant.NONE);
 		}
 	}
 
