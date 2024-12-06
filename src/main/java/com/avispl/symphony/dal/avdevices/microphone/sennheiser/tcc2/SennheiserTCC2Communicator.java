@@ -455,7 +455,9 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 			}
 			DeviceWrapper deviceWrapper = objectMapper.readValue(response, DeviceWrapper.class);
 			String value = deviceWrapper.getObjectByName(command);
-			updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, command.getName(), value);
+			if (!SennheiserConstant.NONE.equals(value)) {
+				updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, command.getName(), value);
+			}
 		} catch (Exception e) {
 			logger.error(String.format("Error when retrieving property name: %s", command.getName()), e);
 			updateCachedDeviceData(localCacheMapOfPropertyNameAndValue, command.getName(), SennheiserConstant.NONE);
