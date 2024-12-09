@@ -488,6 +488,10 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 			}
 			namePropertyCurrent = command.getName();
 			value = localCacheMapOfPropertyNameAndValue.get(namePropertyCurrent);
+			if (StringUtils.isNullOrEmpty(value)) {
+				logger.warn(String.format("Unable to retrieve value %s, skipping", namePropertyCurrent));
+				continue;
+			}
 			switch (command) {
 				case IDENTIFY_DEVICE:
 					addAdvanceControlProperties(advancedControllableProperties, stats,
@@ -587,6 +591,9 @@ public class SennheiserTCC2Communicator extends SocketCommunicator implements Mo
 				default:
 					stats.put(namePropertyCurrent, value);
 			}
+		}
+		if (stats.isEmpty()) {
+			throw new RuntimeException("Unable to retrieve monitoring data from the device. Please check device settings and network connection.");
 		}
 	}
 

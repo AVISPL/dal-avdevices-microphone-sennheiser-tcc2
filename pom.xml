@@ -79,21 +79,21 @@
       <artifactId>symphony-api-dal</artifactId>
       <version>${symphonyApiVersion}</version>
       <scope>system</scope>
-      <systemPath>${basedir}/lib/symphony-api-dal-5.12.0.jar</systemPath>
+      <systemPath>${basedir}/lib/symphony-api-dal-5.15.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>com.avispl.symphony.dal</groupId>
       <artifactId>symphony-dal-commons</artifactId>
       <version>${symphonyApiVersion}</version>
       <scope>system</scope>
-      <systemPath>${basedir}/lib/symphony-dal-commons-5.12.0.jar</systemPath>
+      <systemPath>${basedir}/lib/symphony-dal-commons-5.15.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>com.avispl.symphony.api</groupId>
       <artifactId>symphony-api-commons</artifactId>
       <version>${symphonyApiVersion}</version>
       <scope>system</scope>
-      <systemPath>${basedir}/lib/symphony-api-commons-5.12.0.jar</systemPath>
+      <systemPath>${basedir}/lib/symphony-api-commons-5.15.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>org.icmp4j</groupId>
