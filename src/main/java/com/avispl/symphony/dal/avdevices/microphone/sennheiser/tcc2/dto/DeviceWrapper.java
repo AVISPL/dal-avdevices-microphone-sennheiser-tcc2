@@ -1,5 +1,5 @@
 /*
- *  * Copyright (c) 2023 AVI-SPL, Inc. All Rights Reserved.
+ *  * Copyright (c) 2023-2024 AVI-SPL, Inc. All Rights Reserved.
  */
 package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto;
 
@@ -9,8 +9,8 @@ import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserConstant;
-import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserPropertiesList;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.common.SennheiserConstant;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.common.SennheiserPropertiesList;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.audio.AudioDTO;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.DeviceDTO;
 import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.dto.device.identity.IdentityDTO;

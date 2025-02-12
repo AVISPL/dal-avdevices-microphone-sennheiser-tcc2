@@ -1,8 +1,8 @@
 /*
- *  Copyright (c) 2023 AVI-SPL, Inc. All Rights Reserved.
+ *  Copyright (c) 2023-2024 AVI-SPL, Inc. All Rights Reserved.
  */
 
-package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom;
+package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.common;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -51,7 +51,7 @@ public enum SennheiserLEDColorMetric {
 	 * @return uppercase value
 	 */
 	public static String getNameByValue(String value) {
-		Optional<SennheiserLEDColorMetric> sennheiserLEDColorMetric = Arrays.stream(SennheiserLEDColorMetric.values()).filter(item -> item.getName().equalsIgnoreCase(value)).findFirst();
+		Optional<SennheiserLEDColorMetric> sennheiserLEDColorMetric = Arrays.stream(values()).filter(item -> item.getName().equalsIgnoreCase(value)).findFirst();
 		return sennheiserLEDColorMetric.isPresent() ? sennheiserLEDColorMetric.get().getName() : SennheiserConstant.NONE;
 	}
 }

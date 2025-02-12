@@ -1,10 +1,8 @@
 /*
- *  * Copyright (c) 2023 AVI-SPL, Inc. All Rights Reserved.
+ *  * Copyright (c) 2023-2024 AVI-SPL, Inc. All Rights Reserved.
  */
 package com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -16,8 +14,8 @@ import org.junit.jupiter.api.Test;
 
 import com.avispl.symphony.api.dal.dto.control.ControllableProperty;
 import com.avispl.symphony.api.dal.dto.monitor.ExtendedStatistics;
-import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserConstant;
-import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.comom.SennheiserPropertiesList;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.common.SennheiserConstant;
+import com.avispl.symphony.dal.avdevices.microphone.sennheiser.tcc2.common.SennheiserPropertiesList;
 
 /**
  * SennheiserTCC2CommunicatorTest
